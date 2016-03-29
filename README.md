@@ -1,0 +1,1 @@
+`cordova-plugin-android-fingerprint-auth@file:///Users/mjwheatley/Development/Cordova/cordova-plugin-android-fingerprint-auth`
