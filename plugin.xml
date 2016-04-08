@@ -28,7 +28,6 @@
 
         <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintAuthenticationDialogFragment.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
-        <source-file src="src/android/FingerprintModule.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="src/android/FingerprintUiHelper.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <source-file src="res/android/drawable/ic_fingerprint_error.xml" target-dir="res/drawable" />
         <source-file src="res/android/drawable/ic_fingerprint_success.xml" target-dir="res/drawable" />
@@ -38,7 +37,6 @@
         <source-file src="res/android/drawable-xhdpi/ic_fp_40px.png" target-dir="res/drawable-xhdpi" />
         <source-file src="res/android/drawable-xxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxhdpi" />
         <source-file src="res/android/drawable-xxxhdpi/ic_fp_40px.png" target-dir="res/drawable-xxxhdpi" />
-        <source-file src="res/android/layout/fingerprint_dialog_backup.xml" target-dir="res/layout" />
         <source-file src="res/android/layout/fingerprint_dialog_container.xml" target-dir="res/layout" />
         <source-file src="res/android/layout/fingerprint_dialog_content.xml" target-dir="res/layout" />
         <source-file src="res/android/values/fpauth-colors.xml" target-dir="res/values" />

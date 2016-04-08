@@ -15,24 +15,17 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="action_settings">Settings</string>
     <string name="cancel">Cancel</string>
-    <string name="use_password">Use password</string>
-    <string name="sign_in">Sign in</string>
+    <string name="use_backup">Use backup</string>
+    <string name="fingerprint_auth_dialog_title">Fingerprint Authentication</string>
     <string name="ok">Ok</string>
     <string name="password">Password</string>
     <string name="fingerprint_description">Confirm fingerprint to continue</string>
     <string name="fingerprint_hint">Touch sensor</string>
-    <string name="password_description">Enter your store password to continue</string>
-    <string name="purchase">Purchase</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again</string>
     <string name="fingerprint_success">Fingerprint recognized</string>
-    <string name="item_title">White Mesh Pluto Backpack</string>
-    <string name="item_price">$62.68</string>
-    <string name="item_description">Mesh backpack in white. Black textile trim throughout.</string>
-    <string name="purchase_done">Purchase successful</string>
     <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
-    <string name="use_fingerprint_in_future">Use fingerprint in the future</string>
     <string name="use_fingerprint_to_authenticate_title">Use fingerprint to authenticate</string>
     <string name="use_fingerprint_to_authenticate_key" >use_fingerprint_to_authenticate_key</string>
+    <string name="secure_lock_screen_required">Secure lock screen required!</string>
 </resources>
