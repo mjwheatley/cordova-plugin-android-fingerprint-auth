@@ -7,7 +7,7 @@ FingerprintAuth.prototype.show = function (params, successCallback, errorCallbac
         errorCallback,
         "FingerprintAuth",  // Java Class
         "authenticate", // action
-        [ // Array of arguments
+        [ // Array of arguments to pass to the Java class
             {
                 clientId: params.clientId,
                 clientSecret: params.clientSecret

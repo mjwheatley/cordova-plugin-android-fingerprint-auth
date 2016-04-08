@@ -1,5 +1,5 @@
 #Installation
-`meteor add cordova:cordova-plugin-android-fingerprint-auth@file:///Users/mjwheatley/Development/Cordova/cordova-plugin-android-fingerprint-auth`
+`meteor add cordova:cordova-plugin-android-fingerprint-auth@https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth.git#latest-commit-SHA`
 
 #Setup
 Add preferences to mobile-config.js
