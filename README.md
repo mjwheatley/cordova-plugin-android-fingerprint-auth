@@ -1,5 +1,5 @@
 #Installation
-`meteor add cordova:cordova-plugin-android-fingerprint-auth@0.0.1`
+`meteor add cordova:cordova-plugin-android-fingerprint-auth`
 
 #Setup
 Add preferences to mobile-config.js
@@ -15,6 +15,7 @@ buildToolsVersion "23.0.2"
 ```
 
 #API
+##FingerprintAuth.show
 ```
 FingerprintAuth.show({
             clientId: "myAppName",
@@ -22,7 +23,7 @@ FingerprintAuth.show({
         }, successCallback, errorCallback);
 
 /**
- * @return {withFingerprint:base64EncodedString, withPassword:String}
+ * @return {withFingerprint:base64EncodedString, withPassword:boolean}
  */
 function successCallback(result) {
     console.log("successCallback(): " + JSON.stringify(result));
@@ -34,9 +35,35 @@ function successCallback(result) {
 }
 
 function errorCallback(error) {
-    console.log("errorCallback(): " + error);
+    console.log(error); // "Fingerprint authentication not available"
 }
 
 ```
 Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
 registered for the device.
+
+##FingerprintAuth.isAvailable
+```
+FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
+
+/**
+ * @return {
+ *      isAvailable:boolean,
+ *      isHardwareDetected:boolean,
+ *      hasEnrolledFingerprints:boolean
+ *   }
+ */
+function isAvailableSuccess(isAvailable) {
+    console.log("FingerprintAuth available: " + JSON.stringify(isAvailable)); // { isAvailable: true }
+    if (isAvailable) {
+        FingerprintAuth.show({
+                    clientId: "myAppName",
+                    clientSecret: "a_very_secret_encryption_key"
+                }, successCallback, errorCallback);
+    }
+}
+
+function isAvailableError(message) {
+    console.log("isAvailableError(): " + message);
+}
+```

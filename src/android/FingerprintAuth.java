@@ -50,6 +50,7 @@ public class FingerprintAuth extends CordovaPlugin {
 	public static KeyStore mKeyStore;
 	public static KeyGenerator mKeyGenerator;
 	public static Cipher mCipher;
+	private FingerprintManager mFingerPrintManager;
 
 	public static CallbackContext mCallbackContext;
 	public static PluginResult mPluginResult;
@@ -81,6 +82,9 @@ public class FingerprintAuth extends CordovaPlugin {
 		packageName = cordova.getActivity().getApplicationContext().getPackageName();
 		mKeyguardManager = cordova.getActivity().getSystemService(KeyguardManager.class);
 		mPluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
+
+		mFingerPrintManager = cordova.getActivity().getApplicationContext()
+				.getSystemService(FingerprintManager.class);
 
 		try {
 			mKeyGenerator = KeyGenerator.getInstance(
@@ -118,43 +122,64 @@ public class FingerprintAuth extends CordovaPlugin {
 						   JSONArray args,
 						   CallbackContext callbackContext) throws JSONException {
 		mCallbackContext = callbackContext;
-		Log.v(TAG, "FingerprintAuth action:" + action);
+		Log.v(TAG, "FingerprintAuth action: " + action);
 
 		JSONObject arg_object = args.getJSONObject(0);
-		mClientId = arg_object.getString("clientId");
-		mClientSecret = arg_object.getString("clientSecret");
 
 		if (action.equals("authenticate")) {
-			createKey();
-			cordova.getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					// Set up the crypto object for later. The object will be authenticated by use
-					// of the fingerprint.
-					if (initCipher()) {
+		    mClientId = arg_object.getString("clientId");
+        	mClientSecret = arg_object.getString("clientSecret");
+			if (isFingerprintAuthAvailable()) {
+				createKey();
+				cordova.getActivity().runOnUiThread(new Runnable() {
+					public void run() {
+						// Set up the crypto object for later. The object will be authenticated by use
+						// of the fingerprint.
+						if (initCipher()) {
 
-						mFragment = new FingerprintAuthenticationDialogFragment();
-						mFragment.setCancelable(false);
-						// Show the fingerprint dialog. The user has the option to use the fingerprint with
-						// crypto, or you can fall back to using a server-side verified password.
-						mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-						mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
-					} else {
-						// This happens if the lock screen has been disabled or or a fingerprint got
-						// enrolled. Thus show the dialog to authenticate with their password first
-						// and ask the user if they want to authenticate with fingerprints in the
-						// future
-						mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-						mFragment.setStage(
-								FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
-						mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+							mFragment = new FingerprintAuthenticationDialogFragment();
+							mFragment.setCancelable(false);
+							// Show the fingerprint dialog. The user has the option to use the fingerprint with
+							// crypto, or you can fall back to using a server-side verified password.
+							mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+							mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+						} else {
+							// This happens if the lock screen has been disabled or or a fingerprint got
+							// enrolled. Thus show the dialog to authenticate with their password first
+							// and ask the user if they want to authenticate with fingerprints in the
+							// future
+							mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+							mFragment.setStage(
+									FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
+							mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+						}
 					}
-				}
-			});
-			mPluginResult.setKeepCallback(true);
+				});
+				mPluginResult.setKeepCallback(true);
+				mCallbackContext.sendPluginResult(mPluginResult);
+
+			} else {
+				mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+				mCallbackContext.error("Fingerprint authentication not available");
+				mCallbackContext.sendPluginResult(mPluginResult);
+			}
+			return true;
+		} else if (action.equals("availability")) {
+			JSONObject resultJson = new JSONObject();
+			resultJson.put("isAvailable", isFingerprintAuthAvailable());
+			resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
+			resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints())
+			mPluginResult = new PluginResult(PluginResult.Status.OK);
+			mCallbackContext.success(resultJson);
 			mCallbackContext.sendPluginResult(mPluginResult);
 			return true;
 		}
 		return false;
+	}
+
+	private boolean isFingerprintAuthAvailable() {
+		return mFingerPrintManager.isHardwareDetected()
+				&& mFingerPrintManager.hasEnrolledFingerprints();
 	}
 
 	/**
