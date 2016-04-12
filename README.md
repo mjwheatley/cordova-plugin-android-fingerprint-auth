@@ -26,7 +26,7 @@ buildToolsVersion "23.0.2"
 ```
 
 #API
-##FingerprintAuth.show
+###FingerprintAuth.show###
 ```
 FingerprintAuth.show({
             clientId: "myAppName",
@@ -56,7 +56,7 @@ registered for the device.
 `clientId` will be used as the alias for your key in the Android Key Store.
 `clientSecret` will be used to encrypt the token returned upon successful fingerprint authentication.
 
-##FingerprintAuth.isAvailable
+###FingerprintAuth.isAvailable###
 ```
 FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
 
