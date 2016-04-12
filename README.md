@@ -53,6 +53,9 @@ function errorCallback(error) {
 Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
 registered for the device.
 
+`clientId` will be used as the alias for your key in the Android Key Store.
+`clientSecret` will be used to encrypt the token returned upon successful fingerprint authentication.
+
 ##FingerprintAuth.isAvailable
 ```
 FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
@@ -64,9 +67,9 @@ FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
  *      hasEnrolledFingerprints:boolean
  *   }
  */
-function isAvailableSuccess(isAvailable) {
-    console.log("FingerprintAuth available: " + JSON.stringify(isAvailable)); // { isAvailable: true }
-    if (isAvailable) {
+function isAvailableSuccess(result) {
+    console.log("FingerprintAuth available: " + JSON.stringify(result));
+    if (result.isAvailable) {
         FingerprintAuth.show({
                     clientId: "myAppName",
                     clientSecret: "a_very_secret_encryption_key"
