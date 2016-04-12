@@ -5,10 +5,9 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaInterface;
 
+import android.annotation.TargetApi;
 import android.app.KeyguardManager;
-import android.content.SharedPreferences;
 import android.hardware.fingerprint.FingerprintManager;
-import android.preference.PreferenceManager;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
@@ -37,6 +36,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+@TargetApi(23)
 public class FingerprintAuth extends CordovaPlugin {
 
 	public static final String TAG = "FingerprintAuth";
@@ -80,9 +80,13 @@ public class FingerprintAuth extends CordovaPlugin {
 		super.initialize(cordova, webView);
 		Log.v(TAG, "Init FingerprintAuth");
 		packageName = cordova.getActivity().getApplicationContext().getPackageName();
-		mKeyguardManager = cordova.getActivity().getSystemService(KeyguardManager.class);
 		mPluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
 
+		if (android.os.Build.VERSION.SDK_INT < 23) {
+			return;
+		}
+
+		mKeyguardManager = cordova.getActivity().getSystemService(KeyguardManager.class);
 		mFingerPrintManager = cordova.getActivity().getApplicationContext()
 				.getSystemService(FingerprintManager.class);
 
@@ -103,7 +107,7 @@ public class FingerprintAuth extends CordovaPlugin {
 			mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
 					+ KeyProperties.BLOCK_MODE_CBC + "/"
 					+ KeyProperties.ENCRYPTION_PADDING_PKCS7);
-		} catch (NoSuchAlgorithmException  e) {
+		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("Failed to get an instance of Cipher", e);
 		} catch (NoSuchPaddingException e) {
 			throw new RuntimeException("Failed to get an instance of Cipher", e);
@@ -123,6 +127,13 @@ public class FingerprintAuth extends CordovaPlugin {
 						   CallbackContext callbackContext) throws JSONException {
 		mCallbackContext = callbackContext;
 		Log.v(TAG, "FingerprintAuth action: " + action);
+		if (android.os.Build.VERSION.SDK_INT < 23) {
+			Log.e(TAG, "minimum SDK version 23 required");
+			mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+			mCallbackContext.error("minimum SDK version 23 required");
+			mCallbackContext.sendPluginResult(mPluginResult);
+			return true;
+		}
 
 		JSONObject arg_object = args.getJSONObject(0);
 
@@ -133,8 +144,8 @@ public class FingerprintAuth extends CordovaPlugin {
 				mCallbackContext.sendPluginResult(mPluginResult);
 				return true;
 			}
-		    mClientId = arg_object.getString("clientId");
-        	mClientSecret = arg_object.getString("clientSecret");
+			mClientId = arg_object.getString("clientId");
+			mClientSecret = arg_object.getString("clientSecret");
 			if (isFingerprintAuthAvailable()) {
 				createKey();
 				cordova.getActivity().runOnUiThread(new Runnable() {
@@ -202,8 +213,6 @@ public class FingerprintAuth extends CordovaPlugin {
 			SecretKey key = (SecretKey) mKeyStore.getKey(mClientId, null);
 			mCipher.init(Cipher.ENCRYPT_MODE, key);
 			return true;
-		} catch (KeyPermanentlyInvalidatedException e) {
-			return setPluginResultError("KeyPermanentlyInvalidatedException");
 		} catch (KeyStoreException e) {
 //			throw new RuntimeException("Failed to init Cipher", e);
 			return setPluginResultError("KeyStoreException");
@@ -222,6 +231,8 @@ public class FingerprintAuth extends CordovaPlugin {
 		} catch (InvalidKeyException e) {
 //			throw new RuntimeException("Failed to init Cipher", e);
 			return setPluginResultError("InvalidKeyException");
+		} catch (Exception e) {
+			return setPluginResultError("Exception");
 		}
 	}
 

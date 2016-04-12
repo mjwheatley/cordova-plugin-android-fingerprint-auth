@@ -16,6 +16,7 @@
 
 package com.cordova.plugin.android.fingerprintauth;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.CancellationSignal;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 /**
  * Small helper class to manage text/icon around fingerprint authentication UI.
  */
+@TargetApi(23)
 public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallback {
 
     static final long ERROR_TIMEOUT_MILLIS = 1600;
