@@ -4,7 +4,10 @@ This plugin was created referencing the [Fingerprint Dialog sample](http://devel
 This plugin will open a native dialog fragment prompting the user to authenticate using their fingerprint.  If the device has a secure lockscreen (pattern, PIN, or password), the user may opt to authenticate using that method as a backup.
 
 #Screenshots
-![Fingerprint Auth Dialog](screenshots/fp_auth_dialog.jpg) | ![Fingerprint Auth Dialog Success](screenshots/fp_auth_dialog_success.png) | ![Fingerprint Auth Dialog Fail](screenshots/fp_auth_dialog_fail.jpg) | ![Fingerprint Auth Dialog Too Many](screenshots/fp_auth_dialog_too_many.jpg) | ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_no_backup.jpg) | ![Confirm Password](screenshots/confirm_creds_pw.png) | ![Confirm PIN](screenshots/confirm_creds_pin.png) | ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
+###Fingerprint Auth Dialog###
+![Fingerprint Auth Dialog](screenshots/fp_auth_dialog.jpg) | ![Fingerprint Auth Dialog Success](screenshots/fp_auth_dialog_success.png) | ![Fingerprint Auth Dialog Fail](screenshots/fp_auth_dialog_fail.jpg) | ![Fingerprint Auth Dialog Too Many](screenshots/fp_auth_dialog_too_many.jpg) | ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_no_backup.jpg) | ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_longer.png)
+###Backup Credentials###
+![Confirm Password](screenshots/confirm_creds_pw.png) | ![Confirm PIN](screenshots/confirm_creds_pin.png) | ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
 
 #Installation
