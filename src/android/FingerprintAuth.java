@@ -7,12 +7,15 @@ import org.apache.cordova.CordovaInterface;
 
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import org.apache.cordova.PluginResult;
@@ -29,6 +32,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Locale;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -63,6 +67,7 @@ public class FingerprintAuth extends CordovaPlugin {
 
 	/** Options */
 	private static boolean mDisableBackup = false;
+	private String mLangCode = "en_US";
 
 	/**
 	 * Constructor.
@@ -139,7 +144,7 @@ public class FingerprintAuth extends CordovaPlugin {
 			return true;
 		}
 
-		JSONObject arg_object = args.getJSONObject(0);
+		final JSONObject arg_object = args.getJSONObject(0);
 
 		if (action.equals("authenticate")) {
 			if (!arg_object.has("clientId") || !arg_object.has("clientSecret")) {
@@ -153,6 +158,18 @@ public class FingerprintAuth extends CordovaPlugin {
 			if (arg_object.has("disableBackup")) {
 				mDisableBackup = arg_object.getBoolean("disableBackup");
 			}
+			if (arg_object.has("locale")) {
+				mLangCode = arg_object.getString("locale");
+				Log.d(TAG, "Change language to locale: " + mLangCode);
+			}
+			// Set language
+			Resources res = cordova.getActivity().getResources();
+			// Change locale settings in the app.
+			DisplayMetrics dm = res.getDisplayMetrics();
+			Configuration conf = res.getConfiguration();
+			conf.locale = new Locale(mLangCode.toLowerCase());
+			res.updateConfiguration(conf, dm);
+
 			if (isFingerprintAuthAvailable()) {
 				createKey();
 				cordova.getActivity().runOnUiThread(new Runnable() {
