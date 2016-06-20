@@ -19,6 +19,7 @@ package com.cordova.plugin.android.fingerprintauth;
 import android.app.DialogFragment;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.fingerprint.FingerprintManager;
@@ -88,6 +89,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FingerprintAuth.onCancelled();
                 dismiss();
             }
         });
@@ -212,6 +214,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
+                FingerprintAuth.onCancelled();
             }
             dismiss();
         }
@@ -228,6 +231,12 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public void onError() {
         goToBackup();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        FingerprintAuth.onCancelled();
     }
 
     /**

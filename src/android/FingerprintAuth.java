@@ -300,6 +300,10 @@ public class FingerprintAuth extends CordovaPlugin {
 		mCallbackContext.sendPluginResult(mPluginResult);
 	}
 
+	public static void onCancelled() {
+		mCallbackContext.error("Cancelled");
+	}
+
 	/**
 	 * Tries to encrypt some data with the generated key in {@link #createKey} which is
 	 * only works if the user has just authenticated via fingerprint.
