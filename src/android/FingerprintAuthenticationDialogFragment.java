@@ -75,6 +75,10 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        boolean disableBackup = args.getBoolean("disableBackup");
+        Log.d(TAG, "disableBackup: " + disableBackup);
+
         int fingerprint_auth_dialog_title_id = getResources()
                 .getIdentifier("fingerprint_auth_dialog_title", "string",
                         FingerprintAuth.packageName);
@@ -97,6 +101,9 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         int second_dialog_button_id = getResources()
                 .getIdentifier("second_dialog_button", "id", FingerprintAuth.packageName);
         mSecondDialogButton = (Button) v.findViewById(second_dialog_button_id);
+        if (disableBackup) {
+            mSecondDialogButton.setVisibility(View.GONE);
+        }
         mSecondDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

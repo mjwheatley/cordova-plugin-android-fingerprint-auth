@@ -8,6 +8,7 @@ import org.apache.cordova.CordovaInterface;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Bundle;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
@@ -59,6 +60,9 @@ public class FingerprintAuth extends CordovaPlugin {
 	private static String mClientId;
 	/** Used to encrypt token */
 	private static String mClientSecret;
+
+	/** Options */
+	private static boolean mDisableBackup = false;
 
 	/**
 	 * Constructor.
@@ -146,6 +150,9 @@ public class FingerprintAuth extends CordovaPlugin {
 			}
 			mClientId = arg_object.getString("clientId");
 			mClientSecret = arg_object.getString("clientSecret");
+			if (arg_object.has("disableBackup")) {
+				mDisableBackup = arg_object.getBoolean("disableBackup");
+			}
 			if (isFingerprintAuthAvailable()) {
 				createKey();
 				cordova.getActivity().runOnUiThread(new Runnable() {
@@ -156,6 +163,10 @@ public class FingerprintAuth extends CordovaPlugin {
 
 							mFragment = new FingerprintAuthenticationDialogFragment();
 							mFragment.setCancelable(false);
+							Bundle bundle = new Bundle();
+							bundle.putBoolean("disableBackup", mDisableBackup);
+							mFragment.setArguments(bundle);
+
 							// Show the fingerprint dialog. The user has the option to use the fingerprint with
 							// crypto, or you can fall back to using a server-side verified password.
 							mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));

@@ -4,9 +4,9 @@ This plugin was created referencing the [Fingerprint Dialog sample](http://devel
 This plugin will open a native dialog fragment prompting the user to authenticate using their fingerprint.  If the device has a secure lockscreen (pattern, PIN, or password), the user may opt to authenticate using that method as a backup.
 
 #Screenshots
-###Fingerprint Auth Dialog###
+###Fingerprint Auth Dialog
 ![Fingerprint Auth Dialog](screenshots/fp_auth_dialog.jpg) | ![Fingerprint Auth Dialog Success](screenshots/fp_auth_dialog_success.png) | ![Fingerprint Auth Dialog Fail](screenshots/fp_auth_dialog_fail.jpg) | ![Fingerprint Auth Dialog Too Many](screenshots/fp_auth_dialog_too_many.jpg) | ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_no_backup.jpg) | ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_longer.png)
-###Backup Credentials###
+###Backup Credentials
 ![Confirm Password](screenshots/confirm_creds_pw.png) | ![Confirm PIN](screenshots/confirm_creds_pin.png) | ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
 
@@ -26,7 +26,20 @@ buildToolsVersion "23.0.2"
 ```
 
 #API
-###FingerprintAuth.show###
+###FingerprintAuth.show(config, successCallback, errorCallbck)
+
+Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
+registered for the device.
+
+#### Config Object
+| Param | Type | Default | Description |
+| --- | --- | --- |
+| clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
+| clientSecret | String | undefined | (REQUIRED) Used to encrypt the token returned upon successful fingerprint authentication. |
+| disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
+
+**Example**  
+
 ```
 FingerprintAuth.show({
             clientId: "myAppName",
@@ -50,13 +63,11 @@ function errorCallback(error) {
 }
 
 ```
-Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
-registered for the device.
 
-`clientId` will be used as the alias for your key in the Android Key Store.
-`clientSecret` will be used to encrypt the token returned upon successful fingerprint authentication.
+###FingerprintAuth.isAvailable(successCallback, errorCallback)
 
-###FingerprintAuth.isAvailable###
+**Example**
+
 ```
 FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
 
