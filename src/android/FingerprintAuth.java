@@ -181,24 +181,20 @@ public class FingerprintAuth extends CordovaPlugin {
                         key = getSecretKey();
                     }
                 }
+                if (!initCipher()) {
+                    createKey();
+                }
                 if (key != null) {
                     cordova.getActivity().runOnUiThread(new Runnable() {
                         public void run() {
                             // Set up the crypto object for later. The object will be authenticated by use
                             // of the fingerprint.
-                            String errorMessage = "";
-//                        boolean isKeyCreated = createKey();
-
-//                        if (isKeyCreated) {
-                            String initCipherExceptionErrorPrefix = "Failed to init Cipher: ";
-                            boolean initCipher = initCipher();
-
                             mFragment = new FingerprintAuthenticationDialogFragment();
                             Bundle bundle = new Bundle();
                             bundle.putBoolean("disableBackup", mDisableBackup);
                             mFragment.setArguments(bundle);
 
-                            if (initCipher) {
+                            if (initCipher()) {
                                 mFragment.setCancelable(false);
                                 // Show the fingerprint dialog. The user has the option to use the fingerprint with
                                 // crypto, or you can fall back to using a server-side verified password.
@@ -221,9 +217,6 @@ public class FingerprintAuth extends CordovaPlugin {
                                     mCallbackContext.sendPluginResult(mPluginResult);
                                 }
                             }
-//                        } else {
-//                            mCallbackContext.sendPluginResult(mPluginResult);
-//                        }
                         }
                     });
                     mPluginResult.setKeepCallback(true);
