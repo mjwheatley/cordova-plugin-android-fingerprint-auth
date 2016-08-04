@@ -176,13 +176,14 @@ public class FingerprintAuth extends CordovaPlugin {
 
             if (isFingerprintAuthAvailable()) {
                 SecretKey key = getSecretKey();
+                boolean isCipherInit = true;
                 if (key == null) {
                     if (createKey()) {
                         key = getSecretKey();
                     }
                 }
-                if (!initCipher()) {
-                    createKey();
+                if (key != null && !initCipher()) {
+                    isCipherInit = false;
                 }
                 if (key != null) {
                     cordova.getActivity().runOnUiThread(new Runnable() {
@@ -220,8 +221,9 @@ public class FingerprintAuth extends CordovaPlugin {
                         }
                     });
                     mPluginResult.setKeepCallback(true);
+                } else {
+                    mCallbackContext.sendPluginResult(mPluginResult);
                 }
-                mCallbackContext.sendPluginResult(mPluginResult);
 
             } else {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
