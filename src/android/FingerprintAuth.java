@@ -257,7 +257,7 @@ public class FingerprintAuth extends CordovaPlugin {
      * been disabled or reset after the key was generated, or if a fingerprint got enrolled after
      * the key was generated.
      */
-    private boolean initCipher() {
+    private static boolean initCipher() {
         boolean initCipher = false;
         String errorMessage = "";
         String initCipherExceptionErrorPrefix = "Failed to init Cipher: ";
@@ -267,7 +267,7 @@ public class FingerprintAuth extends CordovaPlugin {
             initCipher = true;
         } catch (InvalidKeyException e) {
             errorMessage = initCipherExceptionErrorPrefix
-                    + "InvalidKeyException";
+                    + "InvalidKeyException: " + e.toString();
         }
         if (!initCipher) {
             Log.e(TAG, errorMessage);
@@ -275,7 +275,7 @@ public class FingerprintAuth extends CordovaPlugin {
         return initCipher;
     }
 
-    private SecretKey getSecretKey() {
+    private static SecretKey getSecretKey() {
         String errorMessage = "";
         String getSecretKeyExceptionErrorPrefix = "Failed to get SecretKey from KeyStore: ";
         SecretKey key = null;
@@ -284,19 +284,19 @@ public class FingerprintAuth extends CordovaPlugin {
             key = (SecretKey) mKeyStore.getKey(mClientId, null);
         } catch (KeyStoreException e) {
             errorMessage = getSecretKeyExceptionErrorPrefix
-                    + "KeyStoreException";
+                    + "KeyStoreException: " + e.toString();;
         } catch (CertificateException e) {
             errorMessage = getSecretKeyExceptionErrorPrefix
-                    + "CertificateException";
+                    + "CertificateException: " + e.toString();;
         } catch (UnrecoverableKeyException e) {
             errorMessage = getSecretKeyExceptionErrorPrefix
-                    + "UnrecoverableKeyException";
+                    + "UnrecoverableKeyException: " + e.toString();;
         } catch (IOException e) {
             errorMessage = getSecretKeyExceptionErrorPrefix
-                    + "IOException";
+                    + "IOException: " + e.toString();;
         } catch (NoSuchAlgorithmException e) {
             errorMessage = getSecretKeyExceptionErrorPrefix
-                    + "NoSuchAlgorithmException";
+                    + "NoSuchAlgorithmException: " + e.toString();;
         }
         if (key == null) {
             Log.e(TAG, errorMessage);
@@ -332,16 +332,16 @@ public class FingerprintAuth extends CordovaPlugin {
             isKeyCreated = true;
         } catch (NoSuchAlgorithmException e) {
             errorMessage = createKeyExceptionErrorPrefix
-                    + "NoSuchAlgorithmException";
+                    + "NoSuchAlgorithmException: " + e.toString();;
         } catch (InvalidAlgorithmParameterException e) {
             errorMessage = createKeyExceptionErrorPrefix
-                    + "InvalidAlgorithmParameterException";
+                    + "InvalidAlgorithmParameterException: " + e.toString();;
         } catch (CertificateException e) {
             errorMessage = createKeyExceptionErrorPrefix
-                    + "CertificateException";
+                    + "CertificateException: " + e.toString();;
         } catch (IOException e) {
             errorMessage = createKeyExceptionErrorPrefix
-                    + "IOException";
+                    + "IOException: " + e.toString();;
         }
         if (!isKeyCreated) {
             Log.e(TAG, errorMessage);
@@ -364,6 +364,11 @@ public class FingerprintAuth extends CordovaPlugin {
             } else {
                 // Authentication happened with backup password.
                 resultJson.put("withPassword", true);
+
+                // if failed to init cipher because of InvalidKeyException, create new key
+                if (!initCipher()) {
+                    createKey();
+                }
             }
             createdResultJson = true;
         } catch (BadPaddingException e) {
