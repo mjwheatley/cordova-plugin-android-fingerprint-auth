@@ -15,7 +15,7 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="ancel">Cancelar</string>
+    <string name="cancel">Cancelar</string>
     <string name="use_backup">El Respaldo</string>
     <string name="fingerprint_auth_dialog_title">Autenticación de Huellas Digitales</string>
     <string name="ok">De Acuerdo</string>
