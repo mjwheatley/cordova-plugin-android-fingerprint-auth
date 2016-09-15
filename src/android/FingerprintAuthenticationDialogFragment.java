@@ -76,8 +76,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Bundle args = getArguments();
-        boolean disableBackup = args.getBoolean("disableBackup");
-        Log.d(TAG, "disableBackup: " + disableBackup);
+        Log.d(TAG, "disableBackup: " + FingerprintAuth.mDisableBackup);
 
         int fingerprint_auth_dialog_title_id = getResources()
                 .getIdentifier("fingerprint_auth_dialog_title", "string",
@@ -101,7 +100,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         int second_dialog_button_id = getResources()
                 .getIdentifier("second_dialog_button", "id", FingerprintAuth.packageName);
         mSecondDialogButton = (Button) v.findViewById(second_dialog_button_id);
-        if (disableBackup) {
+        if (FingerprintAuth.mDisableBackup) {
             mSecondDialogButton.setVisibility(View.GONE);
         }
         mSecondDialogButton.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +197,10 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
                             Toast.LENGTH_LONG).show();
                     return;
                 }
+                if (FingerprintAuth.mDisableBackup) {
+                    FingerprintAuth.onError("backup disabled");
+                    return;
+                }
                 showAuthenticationScreen();
                 break;
         }
@@ -236,8 +239,14 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onError() {
-        goToBackup();
+    public void onError(CharSequence errString) {
+        if (!FingerprintAuth.mDisableBackup) {
+            goToBackup();
+        } else {
+            FingerprintAuth.onError(errString);
+            dismiss();
+
+        }
     }
 
     @Override

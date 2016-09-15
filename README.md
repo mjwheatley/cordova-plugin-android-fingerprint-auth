@@ -37,6 +37,7 @@ registered for the device.
 | clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
 | clientSecret | String | undefined | (REQUIRED) Used to encrypt the token returned upon successful fingerprint authentication. |
 | disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
+| maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
 | locale | String | "en_US" | Change the language. Available languages (English: "en_US", Spanish: "es" |
 
 **Example**  

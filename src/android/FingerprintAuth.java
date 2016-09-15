@@ -72,7 +72,8 @@ public class FingerprintAuth extends CordovaPlugin {
     /**
      * Options
      */
-    private static boolean mDisableBackup = false;
+    public static boolean mDisableBackup = false;
+    public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
 
     /**
@@ -166,6 +167,12 @@ public class FingerprintAuth extends CordovaPlugin {
                 mLangCode = arg_object.getString("locale");
                 Log.d(TAG, "Change language to locale: " + mLangCode);
             }
+            if (arg_object.has("maxAttempts")) {
+                int maxAttempts = arg_object.getInt("maxAttempts");
+                if (maxAttempts < 5) {
+                    mMaxAttempts = maxAttempts;
+                }
+            }
             // Set language
             Resources res = cordova.getActivity().getResources();
             // Change locale settings in the app.
@@ -191,9 +198,9 @@ public class FingerprintAuth extends CordovaPlugin {
                             // Set up the crypto object for later. The object will be authenticated by use
                             // of the fingerprint.
                             mFragment = new FingerprintAuthenticationDialogFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putBoolean("disableBackup", mDisableBackup);
-                            mFragment.setArguments(bundle);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putBoolean("disableBackup", mDisableBackup);
+//                            mFragment.setArguments(bundle);
 
                             if (initCipher()) {
                                 mFragment.setCancelable(false);
@@ -396,6 +403,10 @@ public class FingerprintAuth extends CordovaPlugin {
 
     public static void onCancelled() {
         mCallbackContext.error("Cancelled");
+    }
+
+    public static void onError(CharSequence errString) {
+        mCallbackContext.error(errString.toString());
     }
 
     /**

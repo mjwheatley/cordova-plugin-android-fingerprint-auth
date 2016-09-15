@@ -25,4 +25,5 @@
     <string name="fingerprint_success">Fingerprint recognized</string>
     <string name="new_fingerprint_enrolled_description">A new fingerprint was added to this device, so your password is required.</string>
     <string name="secure_lock_screen_required">Secure lock screen required!</string>
+    <string name="fingerprint_too_many_attempts">Too many attempts. Try again later.</string>
 </resources>
