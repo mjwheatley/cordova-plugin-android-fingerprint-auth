@@ -380,14 +380,14 @@ public class FingerprintAuth extends CordovaPlugin {
             createdResultJson = true;
         } catch (BadPaddingException e) {
             errorMessage = "Failed to encrypt the data with the generated key:" +
-                    " BadPaddingException:  " + e.getMessage();
+                    " BadPaddingException:  " + e.toString();
             Log.e(TAG, errorMessage);
         } catch (IllegalBlockSizeException e) {
             errorMessage = "Failed to encrypt the data with the generated key: " +
-                    "IllegalBlockSizeException: " + e.getMessage();
+                    "IllegalBlockSizeException: " + e.toString();
             Log.e(TAG, errorMessage);
         } catch (JSONException e) {
-            errorMessage = "Failed to set resultJson key value pair: " + e.getMessage();
+            errorMessage = "Failed to set resultJson key value pair: " + e.toString();
             Log.e(TAG, errorMessage);
         }
 
