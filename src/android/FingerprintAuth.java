@@ -75,6 +75,7 @@ public class FingerprintAuth extends CordovaPlugin {
     public static boolean mDisableBackup = false;
     public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
+    private static boolean mUserAuthRequired = true;
 
     /**
      * Constructor.
@@ -173,6 +174,10 @@ public class FingerprintAuth extends CordovaPlugin {
                     mMaxAttempts = maxAttempts;
                 }
             }
+            if (arg_object.has("userAuthRequired")) {
+                mUserAuthRequired = arg_object.getBoolean("userAuthRequired");
+            }
+
             // Set language
             Resources res = cordova.getActivity().getResources();
             // Change locale settings in the app.
@@ -332,7 +337,7 @@ public class FingerprintAuth extends CordovaPlugin {
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                             // Require the user to authenticate with a fingerprint to authorize every use
                             // of the key
-                    .setUserAuthenticationRequired(true)
+                    .setUserAuthenticationRequired(mUserAuthRequired)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
             mKeyGenerator.generateKey();

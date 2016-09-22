@@ -39,6 +39,7 @@ registered for the device.
 | disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
 | maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
 | locale | String | "en_US" | Change the language. Available languages (English: "en_US", Spanish: "es" |
+| userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
 
 **Example**  
 
