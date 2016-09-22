@@ -78,14 +78,39 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         Bundle args = getArguments();
         Log.d(TAG, "disableBackup: " + FingerprintAuth.mDisableBackup);
 
+
+        // Set dialog Title
         int fingerprint_auth_dialog_title_id = getResources()
                 .getIdentifier("fingerprint_auth_dialog_title", "string",
                         FingerprintAuth.packageName);
-        getDialog().setTitle(getString(fingerprint_auth_dialog_title_id));
+        String dialogTitle = getString(fingerprint_auth_dialog_title_id);
+        if (null != FingerprintAuth.mDialogTitle) {
+            dialogTitle = FingerprintAuth.mDialogTitle;
+        }
+        getDialog().setTitle(dialogTitle);
+
+        // Inflate layout
         int fingerprint_dialog_container_id = getResources()
                 .getIdentifier("fingerprint_dialog_container", "layout",
                         FingerprintAuth.packageName);
         View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
+
+        // Set dialog message
+        int fingerprint_description_id = getResources()
+                .getIdentifier("fingerprint_description", "id", FingerprintAuth.packageName);
+        TextView dialogMessageTextView = (TextView) v.findViewById(fingerprint_description_id);
+        if (null != FingerprintAuth.mDialogMessage) {
+            dialogMessageTextView.setText(FingerprintAuth.mDialogMessage);
+        }
+
+        // Set dialog hing
+        int fingerprint_hint_id = getResources()
+                .getIdentifier("fingerprint_status", "id", FingerprintAuth.packageName);
+        TextView dialogHintTextView = (TextView) v.findViewById(fingerprint_hint_id);
+        if (null != FingerprintAuth.mDialogHint) {
+            dialogHintTextView.setText(FingerprintAuth.mDialogHint);
+        }
+
         int cancel_button_id = getResources()
                 .getIdentifier("cancel_button", "id", FingerprintAuth.packageName);
         mCancelButton = (Button) v.findViewById(cancel_button_id);

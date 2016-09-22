@@ -76,6 +76,9 @@ public class FingerprintAuth extends CordovaPlugin {
     public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
     private static boolean mUserAuthRequired = true;
+    public static String mDialogTitle;
+    public static String mDialogMessage;
+    public static String mDialogHint;
 
     /**
      * Constructor.
@@ -176,6 +179,15 @@ public class FingerprintAuth extends CordovaPlugin {
             }
             if (arg_object.has("userAuthRequired")) {
                 mUserAuthRequired = arg_object.getBoolean("userAuthRequired");
+            }
+            if (arg_object.has("dialogTitle")) {
+                mDialogTitle = arg_object.getString("dialogTitle");
+            }
+            if (arg_object.has("dialogMessage")) {
+                mDialogMessage = arg_object.getString("dialogMessage");
+            }
+            if (arg_object.has("dialogHint")) {
+                mDialogHint = arg_object.getString("dialogHint");
             }
 
             // Set language

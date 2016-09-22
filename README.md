@@ -40,7 +40,9 @@ registered for the device.
 | maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
 | locale | String | "en_US" | Change the language. Available languages (English: "en_US", Spanish: "es" |
 | userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
-
+| dialogTitle | String | undefined | Set the title of the fingerprint authentication dialog. |
+| dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
+| dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
 **Example**  
 
 ```
