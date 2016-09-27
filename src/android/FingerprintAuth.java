@@ -72,8 +72,13 @@ public class FingerprintAuth extends CordovaPlugin {
     /**
      * Options
      */
-    private static boolean mDisableBackup = false;
+    public static boolean mDisableBackup = false;
+    public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
+    private static boolean mUserAuthRequired = true;
+    public static String mDialogTitle;
+    public static String mDialogMessage;
+    public static String mDialogHint;
 
     /**
      * Constructor.
@@ -166,6 +171,25 @@ public class FingerprintAuth extends CordovaPlugin {
                 mLangCode = arg_object.getString("locale");
                 Log.d(TAG, "Change language to locale: " + mLangCode);
             }
+            if (arg_object.has("maxAttempts")) {
+                int maxAttempts = arg_object.getInt("maxAttempts");
+                if (maxAttempts < 5) {
+                    mMaxAttempts = maxAttempts;
+                }
+            }
+            if (arg_object.has("userAuthRequired")) {
+                mUserAuthRequired = arg_object.getBoolean("userAuthRequired");
+            }
+            if (arg_object.has("dialogTitle")) {
+                mDialogTitle = arg_object.getString("dialogTitle");
+            }
+            if (arg_object.has("dialogMessage")) {
+                mDialogMessage = arg_object.getString("dialogMessage");
+            }
+            if (arg_object.has("dialogHint")) {
+                mDialogHint = arg_object.getString("dialogHint");
+            }
+
             // Set language
             Resources res = cordova.getActivity().getResources();
             // Change locale settings in the app.
@@ -191,9 +215,9 @@ public class FingerprintAuth extends CordovaPlugin {
                             // Set up the crypto object for later. The object will be authenticated by use
                             // of the fingerprint.
                             mFragment = new FingerprintAuthenticationDialogFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putBoolean("disableBackup", mDisableBackup);
-                            mFragment.setArguments(bundle);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putBoolean("disableBackup", mDisableBackup);
+//                            mFragment.setArguments(bundle);
 
                             if (initCipher()) {
                                 mFragment.setCancelable(false);
@@ -325,7 +349,7 @@ public class FingerprintAuth extends CordovaPlugin {
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                             // Require the user to authenticate with a fingerprint to authorize every use
                             // of the key
-                    .setUserAuthenticationRequired(true)
+                    .setUserAuthenticationRequired(mUserAuthRequired)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
             mKeyGenerator.generateKey();
@@ -373,14 +397,14 @@ public class FingerprintAuth extends CordovaPlugin {
             createdResultJson = true;
         } catch (BadPaddingException e) {
             errorMessage = "Failed to encrypt the data with the generated key:" +
-                    " BadPaddingException:  " + e.getMessage();
+                    " BadPaddingException:  " + e.toString();
             Log.e(TAG, errorMessage);
         } catch (IllegalBlockSizeException e) {
             errorMessage = "Failed to encrypt the data with the generated key: " +
-                    "IllegalBlockSizeException: " + e.getMessage();
+                    "IllegalBlockSizeException: " + e.toString();
             Log.e(TAG, errorMessage);
         } catch (JSONException e) {
-            errorMessage = "Failed to set resultJson key value pair: " + e.getMessage();
+            errorMessage = "Failed to set resultJson key value pair: " + e.toString();
             Log.e(TAG, errorMessage);
         }
 
@@ -396,6 +420,10 @@ public class FingerprintAuth extends CordovaPlugin {
 
     public static void onCancelled() {
         mCallbackContext.error("Cancelled");
+    }
+
+    public static void onError(CharSequence errString) {
+        mCallbackContext.error(errString.toString());
     }
 
     /**
