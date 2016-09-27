@@ -25,4 +25,5 @@
     <string name="fingerprint_success">Отпечаток пальца верен</string>
     <string name="new_fingerprint_enrolled_description">Новый отпечаток пальца был добавлен на устройстве, поэтому требуется ввод вашего пароля.</string>
     <string name="secure_lock_screen_required">Требуется защита блокировки экрана!</string>
+    <string name="fingerprint_too_many_attempts">Слишком много попыток. Повторите позже.</string>
 </resources>
