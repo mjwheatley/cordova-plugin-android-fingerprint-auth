@@ -78,22 +78,19 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         Bundle args = getArguments();
         Log.d(TAG, "disableBackup: " + FingerprintAuth.mDisableBackup);
 
-
-        // Set dialog Title
-        int fingerprint_auth_dialog_title_id = getResources()
-                .getIdentifier("fingerprint_auth_dialog_title", "string",
-                        FingerprintAuth.packageName);
-        String dialogTitle = getString(fingerprint_auth_dialog_title_id);
-        if (null != FingerprintAuth.mDialogTitle) {
-            dialogTitle = FingerprintAuth.mDialogTitle;
-        }
-        getDialog().setTitle(dialogTitle);
-
         // Inflate layout
         int fingerprint_dialog_container_id = getResources()
                 .getIdentifier("fingerprint_dialog_container", "layout",
                         FingerprintAuth.packageName);
         View v = inflater.inflate(fingerprint_dialog_container_id, container, false);
+
+        // Set dialog Title
+        int fingerprint_auth_dialog_title_id = getResources()
+                .getIdentifier("fingerprint_auth_dialog_title", "id", FingerprintAuth.packageName);
+        TextView dialogTitleTextView = (TextView) v.findViewById(fingerprint_auth_dialog_title_id);
+        if (null != FingerprintAuth.mDialogTitle) {
+            dialogTitleTextView.setText(FingerprintAuth.mDialogTitle);
+        }
 
         // Set dialog message
         int fingerprint_description_id = getResources()

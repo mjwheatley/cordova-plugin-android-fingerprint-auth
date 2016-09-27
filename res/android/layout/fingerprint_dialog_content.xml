@@ -24,7 +24,7 @@
     android:paddingTop="16dp">
 
     <TextView
-        android:id="@+id/fingerprint_title"
+        android:id="@+id/fingerprint_auth_dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/fingerprint_title"
+        android:layout_below="@+id/fingerprint_auth_dialog_title"
         android:layout_marginTop="16dp"
         android:text="@string/fingerprint_description"
         android:textAppearance="@android:style/TextAppearance.Material.Subhead"
