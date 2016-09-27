@@ -25,4 +25,5 @@
     <string name="fingerprint_success">Reconocido de huella dactilar</string>
     <string name="new_fingerprint_enrolled_description">Una nueva huella digital fue agregada a este dispositivo, por lo que se requiere la contraseña.</string>
     <string name="secure_lock_screen_required">¡Requiere pantalla de bloqueo seguro!</string>
+    <string name="fingerprint_too_many_attempts">Demasiados intentos. Inténtelo de nuevo más tarde.</string>
 </resources>

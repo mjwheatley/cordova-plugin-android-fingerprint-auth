@@ -39,6 +39,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
     private final TextView mErrorTextView;
     private final Callback mCallback;
     private CancellationSignal mCancellationSignal;
+    private int mAttempts = 0;
 
     boolean mSelfCancelled;
 
@@ -102,13 +103,13 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
     }
 
     @Override
-    public void onAuthenticationError(int errMsgId, CharSequence errString) {
+    public void onAuthenticationError(int errMsgId, final CharSequence errString) {
         if (!mSelfCancelled) {
             showError(errString);
             mIcon.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mCallback.onError();
+                    mCallback.onError(errString);
                 }
             }, ERROR_TIMEOUT_MILLIS);
         }
@@ -121,10 +122,27 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
     @Override
     public void onAuthenticationFailed() {
+        mAttempts++;
         int fingerprint_not_recognized_id = mContext.getResources()
-                .getIdentifier("fingerprint_not_recognized", "string", FingerprintAuth.packageName);
-        showError(mIcon.getResources().getString(
-                fingerprint_not_recognized_id));
+                .getIdentifier("fingerprint_not_recognized", "string",
+                        FingerprintAuth.packageName);
+        int fingerprint_too_many_attempts_id = mContext.getResources()
+                .getIdentifier("fingerprint_too_many_attempts", "string",
+                        FingerprintAuth.packageName);
+        final String too_many_attempts_string = mIcon.getResources().getString(
+                fingerprint_too_many_attempts_id);
+        if (mAttempts > FingerprintAuth.mMaxAttempts) {
+            showError(too_many_attempts_string);
+            mIcon.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mCallback.onError(too_many_attempts_string);
+                }
+            }, ERROR_TIMEOUT_MILLIS);
+        } else {
+            showError(mIcon.getResources().getString(
+                    fingerprint_not_recognized_id));
+        }
     }
 
     @Override
@@ -183,6 +201,6 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
         void onAuthenticated();
 
-        void onError();
+        void onError(CharSequence errString);
     }
 }
