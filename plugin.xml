@@ -42,6 +42,13 @@
         <source-file src="res/android/values/fpauth-colors.xml" target-dir="res/values" />
         <source-file src="res/android/values/fpauth-strings.xml" target-dir="res/values" />
         <source-file src="res/android/values-es" target-dir="res" />
+        <source-file src="res/android/values-fr" target-dir="res" />
+        <source-file src="res/android/values-zh" target-dir="res" />
+        <source-file src="res/android/values-zh-rCN" target-dir="res" />
+        <source-file src="res/android/values-zh-rHK" target-dir="res" />
+        <source-file src="res/android/values-zh-rMO" target-dir="res" />
+        <source-file src="res/android/values-zh-rSG" target-dir="res" />
+        <source-file src="res/android/values-zh-rTW" target-dir="res" />
 
     </platform>
 
