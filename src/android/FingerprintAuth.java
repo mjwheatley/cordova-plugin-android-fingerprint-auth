@@ -195,7 +195,14 @@ public class FingerprintAuth extends CordovaPlugin {
             // Change locale settings in the app.
             DisplayMetrics dm = res.getDisplayMetrics();
             Configuration conf = res.getConfiguration();
-            conf.locale = new Locale(mLangCode.toLowerCase());
+            // A length of 5 entales a region specific locale string, ex: zh_HK.
+            // The two argument Locale constructor signature must be used in that case.
+            if (mLangCode.length() == 5) {
+                conf.locale = new Locale(mLangCode.substring(0, 2).toLowerCase(), 
+                    mLangCode.substring(mLangCode.length() - 2).toUpperCase());
+            } else {
+                conf.locale = new Locale(mLangCode.toLowerCase());
+            }
             res.updateConfiguration(conf, dm);
 
             if (isFingerprintAuthAvailable()) {
