@@ -50,6 +50,7 @@
         <source-file src="res/android/values-zh-rMO" target-dir="res" />
         <source-file src="res/android/values-zh-rSG" target-dir="res" />
         <source-file src="res/android/values-zh-rTW" target-dir="res" />
+        <source-file src="res/android/values-no" target-dir="res" />
 
     </platform>
 
