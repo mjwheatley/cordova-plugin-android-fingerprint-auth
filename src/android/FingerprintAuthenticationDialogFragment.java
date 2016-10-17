@@ -263,7 +263,9 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public void onError(CharSequence errString) {
         if (!FingerprintAuth.mDisableBackup) {
-            goToBackup();
+            if (getActivity() != null && isAdded()) {
+                goToBackup();
+            }
         } else {
             FingerprintAuth.onError(errString);
             dismiss();
