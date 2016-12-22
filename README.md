@@ -26,54 +26,11 @@ buildToolsVersion "23.0.2"
 ```
 
 #API
-###FingerprintAuth.show(config, successCallback, errorCallbck)
-
-Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
-registered for the device.
-
-#### Config Object
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
-| clientSecret | String | undefined | (REQUIRED) Used to encrypt the token returned upon successful fingerprint authentication. |
-| disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
-| maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
-| locale | String | "en_US" | Change the language displayed on the authentication dialog.<br/><ul><li>English: "en_US"</li><li>Italian: "it"</li><li>Spanish: "es"</li><li>Russian: "ru"</li><li>French: "fr"</li><li>Chinese (Simplified): <ul><li>"zh_CN"</li><li>"zh_SG"</li></ul></li><li>Chinese (Traditional): <ul><li>"zh"</li><li>"zh_HK"</li><li>"zh_TW"</li><li>"zh_MO"</li></ul></li><li>Norwegian: "no"</li><li>Portuguese: "pt"</li><li>Japanese: "ja"</li></ul> |
-| userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
-| dialogTitle | String | undefined | Set the title of the fingerprint authentication dialog. |
-| dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
-| dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
-**Example**  
-
-```
-FingerprintAuth.show({
-            clientId: "myAppName",
-            clientSecret: "a_very_secret_encryption_key"
-        }, successCallback, errorCallback);
-
-/**
- * @return {withFingerprint:base64EncodedString, withPassword:boolean}
- */
-function successCallback(result) {
-    console.log("successCallback(): " + JSON.stringify(result));
-    if (result.withFingerprint) {
-        console.log("Successfully authenticated using a fingerprint");
-    } else if (result.withPassword) {
-        console.log("Authenticated with backup password");
-    }
-}
-
-function errorCallback(error) {
-    console.log(error); // "Fingerprint authentication not available"
-}
-
-```
-
 ###FingerprintAuth.isAvailable(successCallback, errorCallback)
 
 **Example**
 
-```
+```javascript
 FingerprintAuth.isAvailable(isAvailableSuccess, isAvailableError);
 
 /**
@@ -95,5 +52,130 @@ function isAvailableSuccess(result) {
 
 function isAvailableError(message) {
     console.log("isAvailableError(): " + message);
+}
+```
+
+###FingerprintAuth.init(config, successCallback, errorCallbck)
+
+Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
+registered for the device.
+
+#### Config Object
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
+| clientSecret | String | undefined | (REQUIRED) Data to be encrypted by the fingerprint plugin. |
+| disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
+| maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
+| locale | String | "en_US" | Change the language displayed on the authentication dialog.<br/><ul><li>English: "en_US"</li><li>Italian: "it"</li><li>Spanish: "es"</li><li>Russian: "ru"</li><li>French: "fr"</li><li>Chinese (Simplified): <ul><li>"zh_CN"</li><li>"zh_SG"</li></ul></li><li>Chinese (Traditional): <ul><li>"zh"</li><li>"zh_HK"</li><li>"zh_TW"</li><li>"zh_MO"</li></ul></li><li>Norwegian: "no"</li><li>Portuguese: "pt"</li><li>Japanese: "ja"</li></ul> |
+| userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
+| dialogTitle | String | undefined | Set the title of the fingerprint authentication dialog. |
+| dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
+| dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
+**Example**  
+
+```javascript
+FingerprintAuth.init({
+            clientId: "myAppName",
+            clientSecret: "data_to_be_encrypted"
+        }, successCallback, errorCallback);
+
+/**
+ * @return {withFingerprint:clientSecretBase64CryptedString, withPassword:boolean}
+ */
+function successCallback(result) {
+    console.log("successCallback(): " + JSON.stringify(result));
+    if (result.withFingerprint) {
+        console.log("Successfully encrypting data");
+        console.log("Encrypted data: " + result.withFingerprint);
+    } else if (result.withPassword) {
+        console.log("Authenticated with backup password");
+    }
+}
+
+function errorCallback(error) {
+    console.log(error); // "Fingerprint authentication not available"
+}
+
+```
+
+###FingerprintAuth.show(config, successCallback, errorCallback)
+
+Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
+registered for the device.
+
+#### Config Object
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
+| clientSecret | String | undefined | (REQUIRED) Data to be decrypted (the base64 returned by `init` function) by the fingerprint plugin. |
+| disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
+| maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
+| locale | String | "en_US" | Change the language displayed on the authentication dialog.<br/><ul><li>English: "en_US"</li><li>Italian: "it"</li><li>Spanish: "es"</li><li>Russian: "ru"</li><li>French: "fr"</li><li>Chinese (Simplified): <ul><li>"zh_CN"</li><li>"zh_SG"</li></ul></li><li>Chinese (Traditional): <ul><li>"zh"</li><li>"zh_HK"</li><li>"zh_TW"</li><li>"zh_MO"</li></ul></li><li>Norwegian: "no"</li><li>Portuguese: "pt"</li><li>Japanese: "ja"</li></ul> |
+| userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
+| dialogTitle | String | undefined | Set the title of the fingerprint authentication dialog. |
+| dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
+| dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
+**Example**  
+
+```javascript
+FingerprintAuth.show({
+            clientId: "myAppName",
+            clientSecret: "data_to_be_decrypted"
+        }, successCallback, errorCallback);
+
+/**
+ * @return {withFingerprint:clientSecretDecryptedString, withPassword:boolean}
+ */
+function successCallback(result) {
+    console.log("successCallback(): " + JSON.stringify(result));
+    if (result.withFingerprint) {
+        console.log("Successfully authenticated using a fingerprint");
+    } else if (result.withPassword) {
+        console.log("Authenticated with backup password");
+    }
+}
+
+function errorCallback(error) {
+    console.log(error); // "Fingerprint authentication not available"
+}
+
+```
+
+###FingerprintAuth.delete(config, successCallback, errorCallback)
+
+Used to reset the fingerprint plugin.
+
+#### Config Object
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
+
+**Example**
+
+```javascript
+FingerprintAuth.delete({
+            clientId: "myAppName"
+        }, successCallback, errorCallback);
+
+/**
+ * @return {
+ *      isAvailable:boolean,
+ *      isHardwareDetected:boolean,
+ *      hasEnrolledFingerprints:boolean
+ *   }
+ */
+function successCallback(result) {
+    console.log("FingerprintAuth available: " + JSON.stringify(result));
+    if (result.isAvailable) {
+        FingerprintAuth.show({
+                    clientId: "myAppName",
+                    clientSecret: "a_very_secret_encryption_key"
+                }, successCallback, errorCallback);
+    }
+}
+
+function errorCallback(error) {
+    console.log(error);
 }
 ```
