@@ -493,7 +493,7 @@ public class FingerprintAuth extends CordovaPlugin {
      * @param context  App context
      * @param name     Preference name
      * @param key      Preference key
-     * @return Returns true if deleted otherwise
+     * @return Returns true if deleted otherwise false
      */
     public static boolean deleteStringPreference(Context context, String name, String key) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE);
