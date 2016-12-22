@@ -242,7 +242,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
             // Challenge completed, proceed with using cipher
             if (resultCode == getActivity().RESULT_OK) {
-                FingerprintAuth.onAuthenticated(false /* used backup */);
+                FingerprintAuth.onAuthenticated(false /* used backup */, null);
             } else {
                 // The user canceled or didn’t complete the lock screen
                 // operation. Go to error/cancellation flow.
@@ -253,10 +253,10 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onAuthenticated() {
+    public void onAuthenticated(FingerprintManager.AuthenticationResult result) {
         // Callback from FingerprintUiHelper. Let the activity know that authentication was
         // successful.
-        FingerprintAuth.onAuthenticated(true /* withFingerprint */);
+        FingerprintAuth.onAuthenticated(true /* withFingerprint */, result);
         dismiss();
     }
 

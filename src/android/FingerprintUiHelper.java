@@ -40,6 +40,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
     private final Callback mCallback;
     private CancellationSignal mCancellationSignal;
     private int mAttempts = 0;
+    private static FingerprintManager.AuthenticationResult fingerprintResult;
 
     boolean mSelfCancelled;
 
@@ -147,6 +148,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
+        fingerprintResult = result;
         mErrorTextView.removeCallbacks(mResetErrorTextRunnable);
         int ic_fingerprint_success_id = mContext.getResources()
                 .getIdentifier("ic_fingerprint_success", "drawable", FingerprintAuth.packageName);
@@ -162,7 +164,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
         mIcon.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mCallback.onAuthenticated();
+                mCallback.onAuthenticated(fingerprintResult);
             }
         }, SUCCESS_DELAY_MILLIS);
     }
@@ -199,7 +201,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
     public interface Callback {
 
-        void onAuthenticated();
+        void onAuthenticated(FingerprintManager.AuthenticationResult result);
 
         void onError(CharSequence errString);
     }
