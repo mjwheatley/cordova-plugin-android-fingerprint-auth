@@ -25,6 +25,12 @@ compileSdkVersion 23
 buildToolsVersion "23.0.2"
 ```
 
+#How to use
+- Call `isAvailable` to check the fingerprint status
+- Call `init` to encrypt `clientSecret`, when the fingerprint is activated into your App
+- Call `show` to decrypt `clientSecret` returned by `init`
+- Call `delete` when you want to reset all the fingerprint data and settings
+
 #API
 ###FingerprintAuth.isAvailable(successCallback, errorCallback)
 
