@@ -200,6 +200,8 @@ public class FingerprintAuth extends CordovaPlugin {
                     mClientId = arg_object.getString("clientId");
                     if (arg_object.has("username")) {
                         mUsername = arg_object.getString("username");
+                    } else {
+                        mUsername = "";
                     }
 
                     boolean missingParam = false;
@@ -320,7 +322,11 @@ public class FingerprintAuth extends CordovaPlugin {
                         return true;
                     }
                     mClientId = arg_object.getString("clientId");
-                    mUsername = arg_object.getString("username");
+                    if (arg_object.has("username")) {
+                        mUsername = arg_object.getString("username");
+                    }else {
+                        mUsername = "";
+                    }
                     boolean deleted = deleteIV();
                     if (deleted) {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
