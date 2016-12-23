@@ -67,7 +67,7 @@ public class FingerprintAuth extends CordovaPlugin {
     /**
      * Used to encrypt token
      */
-    private static String mUsername;
+    private static String mUsername = "";
     private static String mClientSecret;
     private static boolean mCipherModeCrypt;
 
@@ -162,8 +162,13 @@ public class FingerprintAuth extends CordovaPlugin {
                 return true;
             }
             mClientId = arg_object.getString("clientId");
-            mUsername = arg_object.getString("username");
             mCipherMode = arg_object.getString("cipherMode");
+            
+            if (arg_object.has("username")) {
+                mUsername = arg_object.getString("username");
+            } else {
+                mUsername = "";
+            }
 
             boolean missingParam = false;
             if (mCipherMode.equalsIgnoreCase("decrypt")) {
@@ -177,7 +182,7 @@ public class FingerprintAuth extends CordovaPlugin {
                 mCipherModeCrypt = true; // Encrypt mode
                 if (arg_object.has("password")) {
                     String password = arg_object.getString("password");
-                    mClientSecret = mUsername + ":" + password;
+                    mClientSecret = mClientId + mUsername + ":" + password;
                 } else {
                     missingParam = true;
                 }
@@ -292,7 +297,11 @@ public class FingerprintAuth extends CordovaPlugin {
                 return true;
             }
             mClientId = arg_object.getString("clientId");
-            mUsername = arg_object.getString("username");
+            if (arg_object.has("username")) {
+                mUsername = arg_object.getString("username");
+            } else {
+                mUsername = "";
+            }
             boolean deleted = deleteIV();
             if (deleted) {
                 mPluginResult = new PluginResult(PluginResult.Status.OK);
@@ -334,9 +343,9 @@ public class FingerprintAuth extends CordovaPlugin {
             if (mCipherModeCrypt) {
                 mCipher.init(Cipher.ENCRYPT_MODE, key);
                 mCipherIV = mCipher.getIV();
-                setStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV, new String(Base64.encode(mCipherIV, Base64.NO_WRAP)));
+                setStringPreference(mContext, mClientId + mUsername, FINGERPRINT_PREF_IV, new String(Base64.encode(mCipherIV, Base64.NO_WRAP)));
             } else {
-                mCipherIV = Base64.decode(getStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV), Base64.NO_WRAP);
+                mCipherIV = Base64.decode(getStringPreference(mContext, mClientId + mUsername, FINGERPRINT_PREF_IV), Base64.NO_WRAP);
                 IvParameterSpec ivspec = new IvParameterSpec(mCipherIV);
                 mCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
             }
@@ -351,7 +360,7 @@ public class FingerprintAuth extends CordovaPlugin {
     }
 
     public static boolean deleteIV() {
-        return deleteStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV);
+        return deleteStringPreference(mContext, mClientId + mUsername, FINGERPRINT_PREF_IV);
     }
 
     private static SecretKey getSecretKey() {
@@ -437,7 +446,7 @@ public class FingerprintAuth extends CordovaPlugin {
                     if (credentialArray.length == 2) {
                         String username = credentialArray[0];
                         String password = credentialArray[1];
-                        if (username.equalsIgnoreCase(mUsername)) {
+                        if (username.equalsIgnoreCase(mClientId + mUsername)) {
                             resultJson.put("password", credentialArray[1]);
                         }
                     }
