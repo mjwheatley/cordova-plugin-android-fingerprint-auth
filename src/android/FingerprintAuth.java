@@ -154,7 +154,7 @@ public class FingerprintAuth extends CordovaPlugin {
     public boolean execute(final String action, JSONArray args, CallbackContext callbackContext)
             throws JSONException {
         mCallbackContext = callbackContext;
-        Log.v(TAG, "FingerprintAuth action: " + action);
+
         if (android.os.Build.VERSION.SDK_INT < 23) {
             Log.e(TAG, "minimum SDK version 23 required");
             mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -162,6 +162,8 @@ public class FingerprintAuth extends CordovaPlugin {
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }
+
+        Log.v(TAG, "FingerprintAuth action: " + action);
         if (action.equals("availability")) {
             mAction = CordovaAction.AVAILABILITY;
         } else if (action.equals("encrypt")) {
@@ -173,14 +175,27 @@ public class FingerprintAuth extends CordovaPlugin {
         } else if (action.equals("delete")) {
             mAction = CordovaAction.DELETE;
         }
+
         if (mAction != null) {
             final JSONObject arg_object = args.getJSONObject(0);
 
             JSONObject resultJson = new JSONObject();
 
+            if (!arg_object.has("clientId")) {
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                mCallbackContext.error("Missing required parameters.");
+                mCallbackContext.sendPluginResult(mPluginResult);
+                return true;
+            }
+
+            mClientId = arg_object.getString("clientId");
+
+            if (arg_object.has("username")) {
+                mUsername = arg_object.getString("username");
+            }
+
             switch (mAction) {
                 case AVAILABILITY:
-
                     resultJson.put("isAvailable", isFingerprintAuthAvailable());
                     resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
                     resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints());
@@ -190,18 +205,6 @@ public class FingerprintAuth extends CordovaPlugin {
                     return true;
                 case ENCRYPT:
                 case DECRYPT:
-                    if (!arg_object.has("clientId")) {
-                        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error("Missing required parameters.");
-                        mCallbackContext.sendPluginResult(mPluginResult);
-                        return true;
-                    }
-
-                    mClientId = arg_object.getString("clientId");
-                    if (arg_object.has("username")) {
-                        mUsername = arg_object.getString("username");
-                    }
-
                     boolean missingParam = false;
                     switch (mAction) {
                         case ENCRYPT:
@@ -313,14 +316,6 @@ public class FingerprintAuth extends CordovaPlugin {
                     }
                     return true;
                 case DELETE:
-                    if (!arg_object.has("clientId") && !arg_object.has("username")) {
-                        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error("Missing required parameters");
-                        mCallbackContext.sendPluginResult(mPluginResult);
-                        return true;
-                    }
-                    mClientId = arg_object.getString("clientId");
-                    mUsername = arg_object.getString("username");
                     boolean deleted = deleteIV();
                     if (deleted) {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
@@ -331,7 +326,6 @@ public class FingerprintAuth extends CordovaPlugin {
                         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
                         mCallbackContext.error(resultJson);
                     }
-
                     mCallbackContext.sendPluginResult(mPluginResult);
                     return true;
             }
