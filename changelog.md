@@ -1,3 +1,17 @@
+#Version 1.2.0
+###What's New
+* Removed `FingerprintAuth.CipherMode`
+* Removed `FingerprintAuth.show() ` in favor of separate actions for encrypt and decrypt
+* Added `FingerprintAuth.encrypt()`
+* Added `FingerprintAuth.decrypt()`
+* Made `username` optional
+* `token` is required for `decrypt()`
+
+###Breaking Changes
+* Removed `FingerprintAuth.CipherMode`
+* Removed `FingerprintAuth.show() ` in favor of separate actions for encrypt and decrypt
+
+
 #Version 1.1.0
 Introducing encryption and decryption of user credentials.
 ###What's New
