@@ -179,7 +179,7 @@ public class FingerprintAuth extends CordovaPlugin {
             JSONObject resultJson = new JSONObject();
 
             switch (mAction) {
-                case AVAILABILITY:
+                case AVAILABILITY: 
 
                     resultJson.put("isAvailable", isFingerprintAuthAvailable());
                     resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
@@ -200,6 +200,8 @@ public class FingerprintAuth extends CordovaPlugin {
                     mClientId = arg_object.getString("clientId");
                     if (arg_object.has("username")) {
                         mUsername = arg_object.getString("username");
+                    } else {
+                        mUsername = "";
                     }
 
                     boolean missingParam = false;
@@ -320,7 +322,11 @@ public class FingerprintAuth extends CordovaPlugin {
                         return true;
                     }
                     mClientId = arg_object.getString("clientId");
-                    mUsername = arg_object.getString("username");
+                    if (arg_object.has("username")) {
+                        mUsername = arg_object.getString("username");
+                    }else {
+                        mUsername = "";
+                    }
                     boolean deleted = deleteIV();
                     if (deleted) {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
@@ -333,7 +339,7 @@ public class FingerprintAuth extends CordovaPlugin {
                     }
 
                     mCallbackContext.sendPluginResult(mPluginResult);
-                    return true;
+                    return true; 
             }
         }
         return false;
@@ -367,7 +373,7 @@ public class FingerprintAuth extends CordovaPlugin {
                         FINGERPRINT_PREF_IV, new String(Base64.encode(mCipherIV, Base64.NO_WRAP)));
             } else {
                 mCipherIV = Base64.decode(getStringPreference(mContext, mClientId + mUsername,
-                        FINGERPRINT_PREF_IV), Base64.NO_WRAP);
+                        FINGERPRINT_PREF_IV), Base64.NO_WRAP); 
                 IvParameterSpec ivspec = new IvParameterSpec(mCipherIV);
                 mCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
             }
