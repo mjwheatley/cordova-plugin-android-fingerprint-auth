@@ -80,8 +80,8 @@ function isAvailableError(message) {
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | clientId | String | undefined | (REQUIRED) Used as the alias for your key in the Android Key Store. |
-| username | String | undefined | (REQUIRED) Used to create credential string for encrypted token and as alias to retrieve the cipher. |
 | cipherMode | FingerprintAuth.CipherMode | undefined | (REQUIRED) Used to determine if plugin should encrypt or decrypt after authentication. <br/><ul><li>FingerprintAuth.CipherMode.ENCRYPT</li><li>FingerprintAuth.CipherMode.DECRYPT</li></ul>|
+| username | String | undefined | Used to create credential string for encrypted token and as alias to retrieve the cipher. If username is undefined the plugin use only clientId to retrive the cipher stored. |
 | password | String | undefined |  Used to create credential string for encrypted token |
 | token | String | undefined | Used to create credential string for encrypted token. |
 | disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
