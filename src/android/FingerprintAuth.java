@@ -67,12 +67,14 @@ public class FingerprintAuth extends CordovaPlugin {
     /**
      * Used to encrypt token
      */
+    private static String mUsername;
     private static String mClientSecret;
     private static boolean mCipherModeCrypt;
 
     /**
      * Options
      */
+    private static String mCipherMode;
     public static boolean mDisableBackup = false;
     public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
@@ -81,7 +83,6 @@ public class FingerprintAuth extends CordovaPlugin {
     public static String mDialogMessage;
     public static String mDialogHint;
     public static Context mContext;
-    public static final String FINGERPRINT_PREF_NAME = "fingerprint_auth";
     public static final String FINGERPRINT_PREF_IV = "aes_iv";
 
     /**
@@ -153,20 +154,42 @@ public class FingerprintAuth extends CordovaPlugin {
 
         final JSONObject arg_object = args.getJSONObject(0);
 
-        if (action.equals("authenticate") || action.equals("init")) { // authenticate is used to decrypt user's password, init is used to encrypt user's password
-            if (action.equals("authenticate")) {
-                mCipherModeCrypt = false; // Decrypt mode
-            } else if (action.equals("init")) {
-                mCipherModeCrypt = true; // Encrypt mode
-            }
-            if (!arg_object.has("clientId") || !arg_object.has("clientSecret")) {
+        if (action.equals("show")) {
+            if (!arg_object.has("clientId") && !arg_object.has("username") || !arg_object.has("cipherMode")) {
                 mPluginResult = new PluginResult(PluginResult.Status.ERROR);
                 mCallbackContext.error("Missing required parameters");
                 mCallbackContext.sendPluginResult(mPluginResult);
                 return true;
             }
             mClientId = arg_object.getString("clientId");
-            mClientSecret = arg_object.getString("clientSecret");
+            mUsername = arg_object.getString("username");
+            mCipherMode = arg_object.getString("cipherMode");
+
+            boolean missingParam = false;
+            if (mCipherMode.equalsIgnoreCase("decrypt")) {
+                mCipherModeCrypt = false; // Decrypt mode
+                if (arg_object.has("token")) {
+                    mClientSecret = arg_object.getString("token");
+                } else {
+                    missingParam = true;
+                }
+            } else if (mCipherMode.equalsIgnoreCase("encrypt")) {
+                mCipherModeCrypt = true; // Encrypt mode
+                if (arg_object.has("password")) {
+                    String password = arg_object.getString("password");
+                    mClientSecret = mUsername + ":" + password;
+                } else {
+                    missingParam = true;
+                }
+            }
+
+            if (missingParam) {
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                mCallbackContext.error("Missing required parameters for specified cipherMode.");
+                mCallbackContext.sendPluginResult(mPluginResult);
+                return true;
+            }
+
             if (arg_object.has("disableBackup")) {
                 mDisableBackup = arg_object.getBoolean("disableBackup");
             }
@@ -262,7 +285,14 @@ public class FingerprintAuth extends CordovaPlugin {
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         } else if (action.equals("delete")) {
+            if (!arg_object.has("clientId") && !arg_object.has("username")) {
+                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                mCallbackContext.error("Missing required parameters");
+                mCallbackContext.sendPluginResult(mPluginResult);
+                return true;
+            }
             mClientId = arg_object.getString("clientId");
+            mUsername = arg_object.getString("username");
             boolean deleted = deleteIV();
             if (deleted) {
                 mPluginResult = new PluginResult(PluginResult.Status.OK);
@@ -304,9 +334,9 @@ public class FingerprintAuth extends CordovaPlugin {
             if (mCipherModeCrypt) {
                 mCipher.init(Cipher.ENCRYPT_MODE, key);
                 mCipherIV = mCipher.getIV();
-                setStringPreference(mContext, FINGERPRINT_PREF_NAME, FINGERPRINT_PREF_IV, new String(Base64.encode(mCipherIV, Base64.NO_WRAP)));
+                setStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV, new String(Base64.encode(mCipherIV, Base64.NO_WRAP)));
             } else {
-                mCipherIV = Base64.decode(getStringPreference(mContext, FINGERPRINT_PREF_NAME, FINGERPRINT_PREF_IV), Base64.NO_WRAP);
+                mCipherIV = Base64.decode(getStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV), Base64.NO_WRAP);
                 IvParameterSpec ivspec = new IvParameterSpec(mCipherIV);
                 mCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
             }
@@ -321,12 +351,7 @@ public class FingerprintAuth extends CordovaPlugin {
     }
 
     public static boolean deleteIV() {
-        try {
-            mKeyStore.deleteEntry(mClientId);
-        } catch (KeyStoreException e) {
-            Log.e(TAG, "Failed to get SecretKey from KeyStore: KeyStoreException: " + e.toString());
-        }
-        return deleteStringPreference(mContext, FINGERPRINT_PREF_NAME, FINGERPRINT_PREF_IV);
+        return deleteStringPreference(mContext, mUsername, FINGERPRINT_PREF_IV);
     }
 
     private static SecretKey getSecretKey() {
@@ -395,25 +420,33 @@ public class FingerprintAuth extends CordovaPlugin {
         JSONObject resultJson = new JSONObject();
         String errorMessage = "";
         boolean createdResultJson = false;
-        String output;
 
         try {
             if (withFingerprint) {
                 // If the user has authenticated with fingerprint, verify that using cryptography and
                 // then return the encrypted (in Base 64) or decrypted mClientSecret
-                byte[] encrypted;
+                byte[] bytes;
                 if (mCipherModeCrypt) {
-                    encrypted = result.getCryptoObject().getCipher().doFinal(mClientSecret.getBytes("UTF-8"));
-                    output = Base64.encodeToString(encrypted, Base64.NO_WRAP);
+                    bytes = result.getCryptoObject().getCipher().doFinal(mClientSecret.getBytes("UTF-8"));
+                    String encodedBytes = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                    resultJson.put("token", encodedBytes);
                 } else {
-                    encrypted = result.getCryptoObject().getCipher().doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
-                    output =  new String(encrypted, "UTF-8");
+                    bytes = result.getCryptoObject().getCipher().doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
+                    String credentialString =  new String(bytes, "UTF-8");
+                    String[] credentialArray = credentialString.split(":");
+                    if (credentialArray.length == 2) {
+                        String username = credentialArray[0];
+                        String password = credentialArray[1];
+                        if (username.equalsIgnoreCase(mUsername)) {
+                            resultJson.put("password", credentialArray[1]);
+                        }
+                    }
                 }
-
-                resultJson.put("withFingerprint", output);
+                resultJson.put("cipherMode", mCipherMode);
+                resultJson.put("withFingerprint", true);
             } else {
                 // Authentication happened with backup password.
-                resultJson.put("withPassword", true);
+                resultJson.put("withBackup", true);
 
                 // If failed to init cipher because of InvalidKeyException, create new key
                 if (!initCipher()) {

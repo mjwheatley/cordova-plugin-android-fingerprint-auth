@@ -5,19 +5,7 @@ FingerprintAuth.prototype.show = function (params, successCallback, errorCallbac
         successCallback,
         errorCallback,
         "FingerprintAuth",  // Java Class
-        "authenticate", // action
-        [ // Array of arguments to pass to the Java class
-            params
-        ]
-    );
-};
-
-FingerprintAuth.prototype.init = function (params, successCallback, errorCallback) {
-    cordova.exec(
-        successCallback,
-        errorCallback,
-        "FingerprintAuth",  // Java Class
-        "init", // action
+        "show", // action
         [ // Array of arguments to pass to the Java class
             params
         ]
@@ -44,6 +32,11 @@ FingerprintAuth.prototype.isAvailable = function (successCallback, errorCallback
         "availability", // action
         [{}]
     );
+};
+
+FingerprintAuth.prototype.CipherMode = {
+    ENCRYPT: "encrypt",
+    DECRYPT: "decrypt"
 };
 
 FingerprintAuth = new FingerprintAuth();
