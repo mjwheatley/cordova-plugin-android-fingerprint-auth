@@ -181,17 +181,19 @@ public class FingerprintAuth extends CordovaPlugin {
 
             JSONObject resultJson = new JSONObject();
 
-            if (!arg_object.has("clientId")) {
-                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                mCallbackContext.error("Missing required parameters.");
-                mCallbackContext.sendPluginResult(mPluginResult);
-                return true;
-            }
+            if (mAction != CordovaAction.AVAILABILITY) {
+                if (!arg_object.has("clientId")) {
+                    mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                    mCallbackContext.error("Missing required parameters.");
+                    mCallbackContext.sendPluginResult(mPluginResult);
+                    return true;
+                }
 
-            mClientId = arg_object.getString("clientId");
+                mClientId = arg_object.getString("clientId");
 
-            if (arg_object.has("username")) {
-                mUsername = arg_object.getString("username");
+                if (arg_object.has("username")) {
+                    mUsername = arg_object.getString("username");
+                }
             }
 
             switch (mAction) {
