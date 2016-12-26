@@ -5,15 +5,20 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaInterface;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.hardware.fingerprint.FingerprintManager;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,7 +54,11 @@ public class FingerprintAuth extends CordovaPlugin {
 
     private static final String DIALOG_FRAGMENT_TAG = "FpAuthDialog";
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
+    public static final String FINGERPRINT_PREF_IV = "aes_iv";
+    private static final int PERMISSIONS_REQUEST_FINGERPRINT = 346437;
 
+    public static Context mContext;
+    public static Activity mActivity;
     public KeyguardManager mKeyguardManager;
     public FingerprintAuthenticationDialogFragment mFragment;
     public static KeyStore mKeyStore;
@@ -60,14 +69,14 @@ public class FingerprintAuth extends CordovaPlugin {
     public static CallbackContext mCallbackContext;
     public static PluginResult mPluginResult;
 
-    public enum CordovaAction {
+    public enum PluginAction {
         AVAILABILITY,
         ENCRYPT,
         DECRYPT,
         DELETE
     }
 
-    public CordovaAction mAction;
+    public PluginAction mAction;
 
     /**
      * Alias for our key in the Android Key Store
@@ -90,8 +99,8 @@ public class FingerprintAuth extends CordovaPlugin {
     public static String mDialogTitle;
     public static String mDialogMessage;
     public static String mDialogHint;
-    public static Context mContext;
-    public static final String FINGERPRINT_PREF_IV = "aes_iv";
+
+
 
     /**
      * Constructor.
@@ -112,6 +121,7 @@ public class FingerprintAuth extends CordovaPlugin {
 
         packageName = cordova.getActivity().getApplicationContext().getPackageName();
         mPluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
+        mActivity = cordova.getActivity();
         mContext = cordova.getActivity().getApplicationContext();
 
         if (android.os.Build.VERSION.SDK_INT < 23) {
@@ -165,15 +175,15 @@ public class FingerprintAuth extends CordovaPlugin {
 
         Log.v(TAG, "FingerprintAuth action: " + action);
         if (action.equals("availability")) {
-            mAction = CordovaAction.AVAILABILITY;
+            mAction = PluginAction.AVAILABILITY;
         } else if (action.equals("encrypt")) {
-            mAction = CordovaAction.ENCRYPT;
+            mAction = PluginAction.ENCRYPT;
             mCipherModeCrypt = true;
         } else if (action.equals("decrypt")) {
-            mAction = CordovaAction.DECRYPT;
+            mAction = PluginAction.DECRYPT;
             mCipherModeCrypt = false;
         } else if (action.equals("delete")) {
-            mAction = CordovaAction.DELETE;
+            mAction = PluginAction.DELETE;
         }
 
         if (mAction != null) {
@@ -181,27 +191,25 @@ public class FingerprintAuth extends CordovaPlugin {
 
             JSONObject resultJson = new JSONObject();
 
-            if (!arg_object.has("clientId")) {
-                mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                mCallbackContext.error("Missing required parameters.");
-                mCallbackContext.sendPluginResult(mPluginResult);
-                return true;
-            }
+            if (mAction != PluginAction.AVAILABILITY) {
+                if (!arg_object.has("clientId")) {
+                    mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                    mCallbackContext.error("Missing required parameters.");
+                    mCallbackContext.sendPluginResult(mPluginResult);
+                    return true;
+                }
 
-            mClientId = arg_object.getString("clientId");
+                mClientId = arg_object.getString("clientId");
 
-            if (arg_object.has("username")) {
-                mUsername = arg_object.getString("username");
+                if (arg_object.has("username")) {
+                    mUsername = arg_object.getString("username");
+                }
             }
 
             switch (mAction) {
                 case AVAILABILITY:
-                    resultJson.put("isAvailable", isFingerprintAuthAvailable());
-                    resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
-                    resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints());
-                    mPluginResult = new PluginResult(PluginResult.Status.OK);
-                    mCallbackContext.success(resultJson);
-                    mCallbackContext.sendPluginResult(mPluginResult);
+                    checkAndRequestPermission(Manifest.permission.USE_FINGERPRINT,
+                            PERMISSIONS_REQUEST_FINGERPRINT);
                     return true;
                 case ENCRYPT:
                 case DECRYPT:
@@ -333,8 +341,84 @@ public class FingerprintAuth extends CordovaPlugin {
         return false;
     }
 
-    private boolean isFingerprintAuthAvailable() {
+    private boolean isFingerprintAuthAvailable() throws SecurityException {
         return mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints();
+    }
+
+    private void sendAvailabilityResult() {
+        String errorMessage = null;
+        JSONObject resultJson = new JSONObject();
+        try {
+            resultJson.put("isAvailable", isFingerprintAuthAvailable());
+            resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
+            resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints());
+            mPluginResult = new PluginResult(PluginResult.Status.OK);
+            mCallbackContext.success(resultJson);
+            mCallbackContext.sendPluginResult(mPluginResult);
+        } catch (JSONException e) {
+            errorMessage = "Availability Result Error: JSONException: " + e.toString();
+        } catch (SecurityException e) {
+            errorMessage = "Availability Result Error: SecurityException: " + e.toString();
+        }
+        if (null != errorMessage) {
+            Log.e(TAG, errorMessage);
+            setPluginResultError(errorMessage);
+        }
+    }
+
+    private void checkAndRequestPermission(String manifestPermissionName,
+                                           int requestCallbackConst) {
+        if (ContextCompat.checkSelfPermission(mContext,
+                manifestPermissionName) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity,
+                    manifestPermissionName)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                String errorMessage = "Fingerprint permission denied. Show request permission rationale.";
+                setPluginResultError(errorMessage);
+            } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(mActivity,
+                        new String[]{manifestPermissionName},
+                        requestCallbackConst);
+
+                // requestCallbackConst is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            sendAvailabilityResult();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) throws JSONException {
+        super.onRequestPermissionResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_FINGERPRINT: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    sendAvailabilityResult();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    String errorMessage = "Fingerprint permission denied.";
+                    setPluginResultError(errorMessage);
+                }
+                return;
+            }
+        }
     }
 
     /**
