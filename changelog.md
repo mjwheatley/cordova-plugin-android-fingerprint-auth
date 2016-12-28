@@ -1,7 +1,7 @@
 #Version 1.2.2
 ###What's New
 * **Bug fix** - `isAvailable()` returning message "Missing required parameters".
-* Added `build-extras.gradel` to add dependency `com.android.support:support-v4:23.0.0`  to check for manifest permissions.
+* Added `build-extras.gradle` to add dependency `com.android.support:support-v4:23.0.0`  to check for manifest permissions.
 * Added check and request for permission to use fingerprints.
 * Added error handling for `SecurityException`
 
