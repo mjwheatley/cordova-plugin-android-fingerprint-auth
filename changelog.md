@@ -1,3 +1,7 @@
+#Version 1.2.3
+###What's New
+* German translations
+
 #Version 1.2.2
 ###What's New
 * **Bug fix** - `isAvailable()` returning message "Missing required parameters".
