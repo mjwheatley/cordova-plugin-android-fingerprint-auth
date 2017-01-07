@@ -1,3 +1,7 @@
+#Version 1.2.4
+###What's New
+* Updated `build-extras.gradle` to use Android SDK 25.
+
 #Version 1.2.3
 ###What's New
 * German translations

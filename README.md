@@ -14,7 +14,7 @@ This plugin will open a native dialog fragment prompting the user to authenticat
 
 #Installation
 ### Cordova
-`cordova plugin add cordova-plugin-candroid-fingerprint-auth`
+`cordova plugin add cordova-plugin-android-fingerprint-auth`
 
 ###Ionic
 `ionic plugin add cordova-plugin-android-fingerprint-auth`
