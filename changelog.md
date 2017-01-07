@@ -30,7 +30,7 @@
 #Version 1.1.0
 Introducing encryption and decryption of user credentials.
 ###What's New
-* #####Added parameters to the FingerprintAuth Config Object
+* **Added parameters to the FingerprintAuth Config Object**
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ Introducing encryption and decryption of user credentials.
 | password | String |  Used to create credential string for encrypted token |
 | token | String  | Used to create credential string for encrypted token. |
 
-* #####Changed FingerprintAuth.show() Result fields
+* **Changed FingerprintAuth.show() Result fields**
 
 | Param | Type  | Description |
 | --- | --- | ---  |
@@ -49,7 +49,7 @@ Introducing encryption and decryption of user credentials.
 | token | String | Will contain the base64 encoded credentials if `withFingerprint == true` and `cipherMode == FingerprintAuth.CipherMode.ENCRYPT`. |
 | password | String | Will contain the decrypted password if `withFingerprint == true` and `cipherMode == FingerprintAuth.CipherMode.DECRYPT` 
 
-* #####New method FingerprintAuth.delete() to delete the cipher used to encrypt/decrypt user credentials.
+* **New method FingerprintAuth.delete() to delete the cipher used to encrypt/decrypt user credentials.**
 
 ###Breaking changes
 

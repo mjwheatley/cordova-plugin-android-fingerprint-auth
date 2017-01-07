@@ -29,7 +29,7 @@ This plugin will open a native dialog fragment prompting the user to authenticat
 
 If you are not concerned with encrypting credentials and just want device authentication (fingerprint or backup), just call `encrypt()` with a `clientId` and look for a callback to the `successCallback`.
 
- ###Encrypt/Decrypt User Credentials
+###Encrypt/Decrypt User Credentials
  
 * Encrypt user credentials
     * Have user sign in with username and password.
@@ -50,7 +50,8 @@ If you are not concerned with encrypting credentials and just want device authen
 * [Config Object](#module_fingerprintauth.config)
 
 <a name="module_fingerprintauth.isAvailable"></a>
-##FingerprintAuth.isAvailable(successCallback, errorCallback)
+
+#FingerprintAuth.isAvailable(successCallback, errorCallback)
 
 Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
 registered for the device.
@@ -88,7 +89,9 @@ function isAvailableError(message) {
 ```
 
 <a name="module_fingerprintauth.config"></a>
+
 ###FingerprintAuth Config Object
+
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | clientId | String | undefined | (**REQUIRED**) Used as the alias for your app's secret key in the Android Key Store. Also used as part of the Shared Preferences key for the cipher userd to encrypt the user credentials. |
@@ -103,8 +106,10 @@ function isAvailableError(message) {
 | dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
 | dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
 
+
 <a name="module_fingerprintauth.encrypt"></a>
-##FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
+
+#FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
 ###Result Object
 | Param | Type  | Description |
@@ -146,7 +151,8 @@ function errorCallback(error) {
 ```
 
 <a name="module_fingerprintauth.decrypt"></a>
-##FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
+
+#FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
 ###Result Object
 | Param | Type  | Description |
@@ -190,7 +196,8 @@ function errorCallback(error) {
 ```
 
 <a name="module_fingerprintauth.delete"></a>
-##FingerprintAuth.delete(config, successCallback, errorCallback)
+
+#FingerprintAuth.delete(config, successCallback, errorCallback)
 
 Used to delete a cipher.
 
