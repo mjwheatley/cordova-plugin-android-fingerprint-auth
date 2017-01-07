@@ -12,22 +12,15 @@ This plugin will open a native dialog fragment prompting the user to authenticat
 ###Backup Credentials
 ![Confirm Password](screenshots/confirm_creds_pw.png) ![Confirm PIN](screenshots/confirm_creds_pin.png) ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
-#Ionic Installation
+#Installation
+### Cordova
+`cordova plugin add cordova-plugin-candroid-fingerprint-auth`
+
+###Ionic
 `ionic plugin add cordova-plugin-android-fingerprint-auth`
 
-#Meteor.js Installation
+###Meteor
 `meteor add cordova:cordova-plugin-android-fingerprint-auth`
-
-Add preference to mobile-config.js
-```
-App.setPreference('android-targetSdkVersion', '23');
-```
-
-Set compile version and build tools in build.gradle
-```
-compileSdkVersion 23
-buildToolsVersion "23.0.2"
-```
 
 #How to use
 - Call `isAvailable()` to check the fingerprint status.
