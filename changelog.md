@@ -1,3 +1,7 @@
+#Version 1.2.5
+###What's New
+* **Bug fix** for issue #46 - Dismiss fragment in a safer way
+
 #Version 1.2.4
 ###What's New
 * Updated `build-extras.gradle` to use Android SDK 25.
