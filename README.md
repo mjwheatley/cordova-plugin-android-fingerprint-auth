@@ -41,6 +41,11 @@ If you are not concerned with encrypting credentials and just want device authen
     * Pass username and token to `decrypt()` to return password.
     * Login using username and decrypted password.
 
+###Example implementation
+* I have created an example implementation using Angular2-Meteor and Ionic2 ([ionic2-meteor-login-fingerprint](https://github.com/mjwheatley/ionci2-meteor-login-fingerprint)).
+    * See ["How It Works"!](https://github.com/mjwheatley/ionci2-meteor-login-fingerprint#how_it_works)
+
+
 #API Reference
 * FingerprintAuth
     * [isAvailable(isAvailableSuccess, isAvailableError)](#module_fingerprintauth.isAvailable)
