@@ -326,6 +326,11 @@ public class FingerprintAuth extends CordovaPlugin {
                 case DELETE:
                     boolean deleted = deleteIV();
                     if (deleted) {
+                        try {
+                            mKeyStore.deleteEntry(mClientId);
+                        } catch (KeyStoreException e) {
+                            Log.e(TAG, "Error while deleting SecretKey.");
+                        }
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
                         mCallbackContext.success();
                     } else {
