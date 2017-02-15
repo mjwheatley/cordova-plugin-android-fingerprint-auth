@@ -12,22 +12,15 @@ This plugin will open a native dialog fragment prompting the user to authenticat
 ###Backup Credentials
 ![Confirm Password](screenshots/confirm_creds_pw.png) ![Confirm PIN](screenshots/confirm_creds_pin.png) ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
-#Ionic Installation
+#Installation
+### Cordova
+`cordova plugin add cordova-plugin-android-fingerprint-auth`
+
+###Ionic
 `ionic plugin add cordova-plugin-android-fingerprint-auth`
 
-#Meteor.js Installation
+###Meteor
 `meteor add cordova:cordova-plugin-android-fingerprint-auth`
-
-Add preference to mobile-config.js
-```
-App.setPreference('android-targetSdkVersion', '23');
-```
-
-Set compile version and build tools in build.gradle
-```
-compileSdkVersion 23
-buildToolsVersion "23.0.2"
-```
 
 #How to use
 - Call `isAvailable()` to check the fingerprint status.
@@ -36,7 +29,7 @@ buildToolsVersion "23.0.2"
 
 If you are not concerned with encrypting credentials and just want device authentication (fingerprint or backup), just call `encrypt()` with a `clientId` and look for a callback to the `successCallback`.
 
- ###Encrypt/Decrypt User Credentials
+###Encrypt/Decrypt User Credentials
  
 * Encrypt user credentials
     * Have user sign in with username and password.
@@ -48,6 +41,11 @@ If you are not concerned with encrypting credentials and just want device authen
     * Pass username and token to `decrypt()` to return password.
     * Login using username and decrypted password.
 
+###Example implementation
+* I have created an example implementation using Angular2-Meteor and Ionic2 ([ionic2-meteor-login-fingerprint](https://github.com/mjwheatley/ionic2-meteor-login-fingerprint)).
+    * See ["How It Works"!](https://github.com/mjwheatley/ionic2-meteor-login-fingerprint#how_it_works)
+
+
 #API Reference
 * FingerprintAuth
     * [isAvailable(isAvailableSuccess, isAvailableError)](#module_fingerprintauth.isAvailable)
@@ -57,7 +55,8 @@ If you are not concerned with encrypting credentials and just want device authen
 * [Config Object](#module_fingerprintauth.config)
 
 <a name="module_fingerprintauth.isAvailable"></a>
-##FingerprintAuth.isAvailable(successCallback, errorCallback)
+
+#FingerprintAuth.isAvailable(successCallback, errorCallback)
 
 Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
 registered for the device.
@@ -95,7 +94,9 @@ function isAvailableError(message) {
 ```
 
 <a name="module_fingerprintauth.config"></a>
+
 ###FingerprintAuth Config Object
+
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | clientId | String | undefined | (**REQUIRED**) Used as the alias for your app's secret key in the Android Key Store. Also used as part of the Shared Preferences key for the cipher userd to encrypt the user credentials. |
@@ -104,14 +105,16 @@ function isAvailableError(message) {
 | token | String | undefined | Data to be decrypted. ***Required*** for `decrypt()`. |
 | disableBackup | boolean | false | Set to true to remove the "USE BACKUP" button |
 | maxAttempts | number | 5 | The device max is 5 attempts.  Set this parameter if you want to allow fewer than 5 attempts.  |
-| locale | String | "en_US" | Change the language displayed on the authentication dialog.<br/><ul><li>English: "en_US"</li><li>Italian: "it"</li><li>Spanish: "es"</li><li>Russian: "ru"</li><li>French: "fr"</li><li>Chinese (Simplified): <ul><li>"zh_CN"</li><li>"zh_SG"</li></ul></li><li>Chinese (Traditional): <ul><li>"zh"</li><li>"zh_HK"</li><li>"zh_TW"</li><li>"zh_MO"</li></ul></li><li>Norwegian: "no"</li><li>Portuguese: "pt"</li><li>Japanese: "ja"</li></ul> |
+| locale | String | "en_US" | Change the language displayed on the authentication dialog.<br/><ul><li>English: "en_US"</li><li>Italian: "it"</li><li>Spanish: "es"</li><li>Russian: "ru"</li><li>French: "fr"</li><li>Chinese (Simplified): <ul><li>"zh_CN"</li><li>"zh_SG"</li></ul></li><li>Chinese (Traditional): <ul><li>"zh"</li><li>"zh_HK"</li><li>"zh_TW"</li><li>"zh_MO"</li></ul></li><li>Norwegian: "no"</li><li>Portuguese: "pt"</li><li>Japanese: "ja"</li><li>German: "de"</li></ul> |
 | userAuthRequired | boolean | true | Require the user to authenticate with a fingerprint to authorize every use of the key.  New fingerprint enrollment will invalidate key and require backup authenticate to re-enable the fingerprint authentication dialog. |
 | dialogTitle | String | undefined | Set the title of the fingerprint authentication dialog. |
 | dialogMessage | String | undefined | Set the message of the fingerprint authentication dialog. |
 | dialogHint | String | undefined | Set the hint displayed by the fingerprint icon on the fingerprint authentication dialog. |
 
+
 <a name="module_fingerprintauth.encrypt"></a>
-##FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
+
+#FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
 ###Result Object
 | Param | Type  | Description |
@@ -153,7 +156,8 @@ function errorCallback(error) {
 ```
 
 <a name="module_fingerprintauth.decrypt"></a>
-##FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
+
+#FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
 ###Result Object
 | Param | Type  | Description |
@@ -197,7 +201,8 @@ function errorCallback(error) {
 ```
 
 <a name="module_fingerprintauth.delete"></a>
-##FingerprintAuth.delete(config, successCallback, errorCallback)
+
+#FingerprintAuth.delete(config, successCallback, errorCallback)
 
 Used to delete a cipher.
 
