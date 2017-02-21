@@ -1,3 +1,5 @@
+#Version 1.2.6
+* **Bug fix** for issue #54 - Show fragment allowing state loss
 #Version 1.2.5
 ###What's New
 * **Bug fix** for issue #46 - Dismiss fragment in a safer way
