@@ -1,3 +1,7 @@
+#Version 1.2.6
+###What's New
+* **Bug fix** for issue #61 - added missing source-file element for German strings to plugin.xml
+
 #Version 1.2.5
 ###What's New
 * **Bug fix** for issue #46 - Dismiss fragment in a safer way
