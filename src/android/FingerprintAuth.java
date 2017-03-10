@@ -76,6 +76,27 @@ public class FingerprintAuth extends CordovaPlugin {
         DELETE
     }
 
+    public enum PluginError {
+        BAD_PADDING_EXCEPTION,
+        CERTIFICATE_EXCEPTION,
+        FINGERPRINT_CANCELLED,
+        FINGERPRINT_DATA_NOT_DELETED,
+        FINGERPRINT_ERROR,
+        FINGERPRINT_NOT_AVAILABLE,
+        FINGERPRINT_PERMISSION_DENIED,
+        FINGERPRINT_PERMISSION_DENIED_SHOW_REQUEST,
+        ILLEGAL_BLOCK_SIZE_EXCEPTION,
+        INIT_CIPHER_FAILED,
+        INVALID_ALGORITHM_PARAMETER_EXCEPTION,
+        IO_EXCEPTION,
+        JSON_EXCEPTION,
+        MINIMUM_SDK,
+        MISSING_ACTION_PARAMETERS,
+        MISSING_PARAMETERS,
+        NO_SUCH_ALGORITHM_EXCEPTION,
+        SECURITY_EXCEPTION
+    }
+
     public PluginAction mAction;
 
     /**
@@ -168,7 +189,7 @@ public class FingerprintAuth extends CordovaPlugin {
         if (android.os.Build.VERSION.SDK_INT < 23) {
             Log.e(TAG, "minimum SDK version 23 required");
             mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-            mCallbackContext.error("minimum SDK version 23 required");
+            mCallbackContext.error(PluginError.MINIMUM_SDK.name());
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
         }
@@ -193,8 +214,9 @@ public class FingerprintAuth extends CordovaPlugin {
 
             if (mAction != PluginAction.AVAILABILITY) {
                 if (!arg_object.has("clientId")) {
+                    Log.e(TAG, "Missing required parameters.");
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                    mCallbackContext.error("Missing required parameters.");
+                    mCallbackContext.error(PluginError.MISSING_PARAMETERS.name());
                     mCallbackContext.sendPluginResult(mPluginResult);
                     return true;
                 }
@@ -232,8 +254,9 @@ public class FingerprintAuth extends CordovaPlugin {
                     }
 
                     if (missingParam) {
+                        Log.e(TAG, "Missing required parameters for specified action.");
                         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error("Missing required parameters for specified action.");
+                        mCallbackContext.error(PluginError.MISSING_ACTION_PARAMETERS.name());
                         mCallbackContext.sendPluginResult(mPluginResult);
                         return true;
                     }
@@ -306,7 +329,8 @@ public class FingerprintAuth extends CordovaPlugin {
                                             mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
                                             mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
                                         } else {
-                                            mCallbackContext.error("Failed to init Cipher and backup disabled.");
+                                            Log.e(TAG, "Failed to init Cipher and backup disabled.");
+                                            mCallbackContext.error(PluginError.INIT_CIPHER_FAILED.name());
                                             mPluginResult = new PluginResult(PluginResult.Status.ERROR);
                                             mCallbackContext.sendPluginResult(mPluginResult);
                                         }
@@ -318,8 +342,9 @@ public class FingerprintAuth extends CordovaPlugin {
                             mCallbackContext.sendPluginResult(mPluginResult);
                         }
                     } else {
+                        Log.e(TAG, "Fingerprint authentication not available");
                         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error("Fingerprint authentication not available");
+                        mCallbackContext.error(PluginError.FINGERPRINT_NOT_AVAILABLE.name());
                         mCallbackContext.sendPluginResult(mPluginResult);
                     }
                     return true;
@@ -338,10 +363,9 @@ public class FingerprintAuth extends CordovaPlugin {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
                         mCallbackContext.success();
                     } else {
-                        resultJson = new JSONObject();
-                        resultJson.put("error", "Error while deleting Fingerprint data.");
+                        Log.e(TAG, "Error while deleting Fingerprint data.");
                         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error(resultJson);
+                        mCallbackContext.error(PluginError.FINGERPRINT_DATA_NOT_DELETED.name());
                     }
                     mCallbackContext.sendPluginResult(mPluginResult);
                     return true;
@@ -365,9 +389,11 @@ public class FingerprintAuth extends CordovaPlugin {
             mCallbackContext.success(resultJson);
             mCallbackContext.sendPluginResult(mPluginResult);
         } catch (JSONException e) {
-            errorMessage = "Availability Result Error: JSONException: " + e.toString();
+            Log.e(TAG, "Availability Result Error: JSONException: " + e.toString());
+            errorMessage = PluginError.JSON_EXCEPTION.name();
         } catch (SecurityException e) {
-            errorMessage = "Availability Result Error: SecurityException: " + e.toString();
+            Log.e(TAG, "Availability Result Error: SecurityException: " + e.toString());
+            errorMessage = PluginError.SECURITY_EXCEPTION.name();
         }
         if (null != errorMessage) {
             Log.e(TAG, errorMessage);
@@ -387,8 +413,8 @@ public class FingerprintAuth extends CordovaPlugin {
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                String errorMessage = "Fingerprint permission denied. Show request permission rationale.";
-                setPluginResultError(errorMessage);
+                Log.e(TAG, "Fingerprint permission denied. Show request permission rationale.");
+                setPluginResultError(PluginError.FINGERPRINT_PERMISSION_DENIED_SHOW_REQUEST.name());
             } else {
 
                 // No explanation needed, we can request the permission.
@@ -422,8 +448,8 @@ public class FingerprintAuth extends CordovaPlugin {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    String errorMessage = "Fingerprint permission denied.";
-                    setPluginResultError(errorMessage);
+                    Log.e(TAG, "Fingerprint permission denied.");
+                    setPluginResultError(PluginError.FINGERPRINT_PERMISSION_DENIED.name());
                 }
                 return;
             }
@@ -525,17 +551,21 @@ public class FingerprintAuth extends CordovaPlugin {
             mKeyGenerator.generateKey();
             isKeyCreated = true;
         } catch (NoSuchAlgorithmException e) {
-            errorMessage = createKeyExceptionErrorPrefix
-                    + "NoSuchAlgorithmException: " + e.toString();
+            Log.e(TAG, createKeyExceptionErrorPrefix
+                    + "NoSuchAlgorithmException: " + e.toString());
+            errorMessage = PluginError.NO_SUCH_ALGORITHM_EXCEPTION.name();
         } catch (InvalidAlgorithmParameterException e) {
-            errorMessage = createKeyExceptionErrorPrefix
-                    + "InvalidAlgorithmParameterException: " + e.toString();
+            Log.e(TAG, createKeyExceptionErrorPrefix
+                    + "InvalidAlgorithmParameterException: " + e.toString());
+            errorMessage = PluginError.INVALID_ALGORITHM_PARAMETER_EXCEPTION.name();
         } catch (CertificateException e) {
-            errorMessage = createKeyExceptionErrorPrefix
-                    + "CertificateException: " + e.toString();
+            Log.e(TAG, createKeyExceptionErrorPrefix
+                    + "CertificateException: " + e.toString());
+            errorMessage = PluginError.CERTIFICATE_EXCEPTION.name();
         } catch (IOException e) {
-            errorMessage = createKeyExceptionErrorPrefix
-                    + "IOException: " + e.toString();
+            Log.e(TAG, createKeyExceptionErrorPrefix
+                    + "IOException: " + e.toString());
+            errorMessage = PluginError.IO_EXCEPTION.name();
         }
         if (!isKeyCreated) {
             Log.e(TAG, errorMessage);
@@ -585,16 +615,16 @@ public class FingerprintAuth extends CordovaPlugin {
             }
             createdResultJson = true;
         } catch (BadPaddingException e) {
-            errorMessage = "Failed to encrypt the data with the generated key:"
-                    + " BadPaddingException:  " + e.toString();
-            Log.e(TAG, errorMessage);
+            Log.e(TAG, "Failed to encrypt the data with the generated key:"
+                    + " BadPaddingException:  " + e.toString());
+            errorMessage = PluginError.BAD_PADDING_EXCEPTION.name();
         } catch (IllegalBlockSizeException e) {
-            errorMessage = "Failed to encrypt the data with the generated key: "
-                    + "IllegalBlockSizeException: " + e.toString();
-            Log.e(TAG, errorMessage);
+            Log.e(TAG, "Failed to encrypt the data with the generated key: "
+                    + "IllegalBlockSizeException: " + e.toString());
+            errorMessage = PluginError.ILLEGAL_BLOCK_SIZE_EXCEPTION.name();
         } catch (JSONException e) {
-            errorMessage = "Failed to set resultJson key value pair: " + e.toString();
-            Log.e(TAG, errorMessage);
+            Log.e(TAG, "Failed to set resultJson key value pair: " + e.toString());
+            errorMessage = PluginError.JSON_EXCEPTION.name();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -610,11 +640,12 @@ public class FingerprintAuth extends CordovaPlugin {
     }
 
     public static void onCancelled() {
-        mCallbackContext.error("Cancelled");
+        mCallbackContext.error(PluginError.FINGERPRINT_CANCELLED.name());
     }
 
     public static void onError(CharSequence errString) {
-        mCallbackContext.error(errString.toString());
+        mCallbackContext.error(PluginError.FINGERPRINT_ERROR.name());
+        Log.e(TAG, errString.toString());
     }
 
     public static boolean setPluginResultError(String errorMessage) {
