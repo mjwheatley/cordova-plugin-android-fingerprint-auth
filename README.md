@@ -1,37 +1,37 @@
-#Update to Version 1.2.0
+# Update to Version 1.2.0
 Please consult the [changelog](https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth/blob/master/changelog.md).
 
-#About
+# About
 This plugin was created referencing the [Fingerprint Dialog sample](http://developer.android.com/samples/FingerprintDialog/index.html) and the [Confirm Credential sample](http://developer.android.com/samples/ConfirmCredential/index.html) referenced by the [Android 6.0 APIs webpage](http://developer.android.com/about/versions/marshmallow/android-6.0.html).
 
 This plugin will open a native dialog fragment prompting the user to authenticate using their fingerprint.  If the device has a secure lockscreen (pattern, PIN, or password), the user may opt to authenticate using that method as a backup.
 
 This plugin will only work on devices whose manufacturers have implemented the Android 6.0 Fingerprint Authentication API.  This plugin does not support the Samsung Pass SDK and not all Samsung devices implement the Android 6.0 Fingerprint Authentication API.  If you are testing this plugin on a Samsung device and it is not working, please check the device compatibility before reporting an issue.
 
-#Screenshots
-###Fingerprint Authentication Dialog
+# Screenshots
+### Fingerprint Authentication Dialog
 ![Fingerprint Auth Dialog](screenshots/fp_auth_dialog.jpg) ![Fingerprint Auth Dialog Success](screenshots/fp_auth_dialog_success.png) ![Fingerprint Auth Dialog Fail](screenshots/fp_auth_dialog_fail.jpg) ![Fingerprint Auth Dialog Too Many](screenshots/fp_auth_dialog_too_many.jpg) ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_no_backup.jpg) ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_longer.png)
-###Backup Credentials
+### Backup Credentials
 ![Confirm Password](screenshots/confirm_creds_pw.png) ![Confirm PIN](screenshots/confirm_creds_pin.png) ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
-#Installation
+# Installation
 ### Cordova
 `cordova plugin add cordova-plugin-android-fingerprint-auth`
 
-###Ionic
+### Ionic
 `ionic plugin add cordova-plugin-android-fingerprint-auth`
 
-###Meteor
+### Meteor
 `meteor add cordova:cordova-plugin-android-fingerprint-auth`
 
-#How to use
+# How to use
 - Call `isAvailable()` to check the fingerprint status.
 - Call `encrypt()` or `decrypt()` show the Authentication Dialog.
 - Call `delete()` when you want to delete the cipher for the user.
 
 If you are not concerned with encrypting credentials and just want device authentication (fingerprint or backup), just call `encrypt()` with a `clientId` and look for a callback to the `successCallback`.
 
-###Encrypt/Decrypt User Credentials
+### Encrypt/Decrypt User Credentials
  
 * Encrypt user credentials
     * Have user sign in with username and password.
@@ -43,27 +43,28 @@ If you are not concerned with encrypting credentials and just want device authen
     * Pass username and token to `decrypt()` to return password.
     * Login using username and decrypted password.
 
-###Example implementation
+### Example implementation
 * I have created an example implementation using Angular2-Meteor and Ionic2 ([ionic2-meteor-login-fingerprint](https://github.com/mjwheatley/ionic2-meteor-login-fingerprint)).
     * See ["How It Works"!](https://github.com/mjwheatley/ionic2-meteor-login-fingerprint#how_it_works)
 
 
-#API Reference
+# API Reference
 * FingerprintAuth
     * [isAvailable(isAvailableSuccess, isAvailableError)](#module_fingerprintauth.isAvailable)
     * [encrypt(encryptConfig, successCallback, errorCallback)](#module_fingerprintauth.encrypt)
     * [decrypt(decryptConfig, successCallback, errorCallback)](#module_fingerprintauth.decrypt)  
     * [delete(deleteConfg, successCallback, errorCallback)](#module_fingerprintauth.delete)
+    * [ERRORS](#module_fingerprintauth.errors)
 * [Config Object](#module_fingerprintauth.config)
 
 <a name="module_fingerprintauth.isAvailable"></a>
 
-#FingerprintAuth.isAvailable(successCallback, errorCallback)
+# FingerprintAuth.isAvailable(successCallback, errorCallback)
 
 Opens a native dialog fragment to use the device hardware fingerprint scanner to authenticate against fingerprints
 registered for the device.
 
-###isAvailable() Result Object
+### isAvailable() Result Object
 | Param | Type  | Description |
 | --- | --- | ---  |
 | isAvailable | boolean | Fingerprint Authentication Dialog is available for use. |
@@ -97,7 +98,7 @@ function isAvailableError(message) {
 
 <a name="module_fingerprintauth.config"></a>
 
-###FingerprintAuth Config Object
+### FingerprintAuth Config Object
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -116,9 +117,9 @@ function isAvailableError(message) {
 
 <a name="module_fingerprintauth.encrypt"></a>
 
-#FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
+# FingerprintAuth.encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
-###Result Object
+### Result Object
 | Param | Type  | Description |
 | --- | --- | ---  |
 | withFingerprint | boolean | User authenticated using a fingerprint |
@@ -148,7 +149,7 @@ function successCallback(result) {
 }
 
 function errorCallback(error) {
-    if (error === "Cancelled") {
+    if (error === FingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
         console.log("FingerprintAuth Dialog Cancelled!");
     } else {
         console.log("FingerprintAuth Error: " + error);
@@ -159,9 +160,9 @@ function errorCallback(error) {
 
 <a name="module_fingerprintauth.decrypt"></a>
 
-#FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
+# FingerprintAuth.decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback)
 
-###Result Object
+### Result Object
 | Param | Type  | Description |
 | --- | --- | ---  |
 | withFingerprint | boolean | User authenticated using a fingerprint |
@@ -193,7 +194,7 @@ function successCallback(result) {
 }
 
 function errorCallback(error) {
-    if (error === "Cancelled") {
+    if (error === FingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
         console.log("FingerprintAuth Dialog Cancelled!");
     } else {
         console.log("FingerprintAuth Error: " + error);
@@ -204,7 +205,7 @@ function errorCallback(error) {
 
 <a name="module_fingerprintauth.delete"></a>
 
-#FingerprintAuth.delete(config, successCallback, errorCallback)
+# FingerprintAuth.delete(config, successCallback, errorCallback)
 
 Used to delete a cipher.
 
@@ -230,3 +231,28 @@ function errorCallback(error) {
     console.log(error);
 }
 ```
+
+
+<a name="module_fingerprintauth.errors"></a>
+
+# FingerprintAuth.ERRORS `JSON Object`
+| Property | Type | Value |
+| --- | --- | --- |
+| BAD_PADDING_EXCEPTION | String | "BAD_PADDING_EXCEPTION" |
+| CERTIFICATE_EXCEPTION | String | "BAD_PADDING_EXCEPTION" |
+| FINGERPRINT_CANCELLED | String | "FINGERPRINT_CANCELLED" |
+| FINGERPRINT_DATA_NOT_DELETED | String | "FINGERPRINT_DATA_NOT_DELETED" |
+| FINGERPRINT_ERROR | String | "FINGERPRINT_ERROR" |
+| FINGERPRINT_NOT_AVAILABLE | String | "FINGERPRINT_NOT_AVAILABLE" |
+| FINGERPRINT_PERMISSION_DENIED | String | "FINGERPRINT_PERMISSION_DENIED" |
+| FINGERPRINT_PERMISSION_DENIED_SHOW_REQUEST | String | "FINGERPRINT_PERMISSION_DENIED_SHOW_REQUEST" |
+| ILLEGAL_BLOCK_SIZE_EXCEPTION | String | "ILLEGAL_BLOCK_SIZE_EXCEPTION" |
+| INIT_CIPHER_FAILED | String | "INIT_CIPHER_FAILED" |
+| INVALID_ALGORITHM_PARAMETER_EXCEPTION | String | "INVALID_ALGORITHM_PARAMETER_EXCEPTION" |
+| IO_EXCEPTION | String | "IO_EXCEPTION" |
+| JSON_EXCEPTION | String | "JSON_EXCEPTION" |
+| MINIMUM_SDK | String | "MINIMUM_SDK" |
+| MISSING_ACTION_PARAMETERS | String | "MISSING_ACTION_PARAMETERS" |
+| MISSING_PARAMETERS | String | "MISSING_PARAMETERS" |
+| NO_SUCH_ALGORITHM_EXCEPTION | String | "NO_SUCH_ALGORITHM_EXCEPTION" |
+| SECURITY_EXCEPTION | String | "SECURITY_EXCEPTION" |

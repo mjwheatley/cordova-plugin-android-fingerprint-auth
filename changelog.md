@@ -1,3 +1,33 @@
+#Version 1.2.7
+###What's New
+* Improved German translations - pull request #58
+* **Bug fix** for issue #57 - deleting secret key in Android Keystore.
+* Added fixed error codes - pull request #56
+* Added `ERRORS` JSON Object to the FingerprintAuth class prototype with the following fields corresponding to the new fixed error codes:
+    ```
+     BAD_PADDING_EXCEPTION,
+     CERTIFICATE_EXCEPTION,
+     FINGERPRINT_CANCELLED,
+     FINGERPRINT_DATA_NOT_DELETED,
+     FINGERPRINT_ERROR,
+     FINGERPRINT_NOT_AVAILABLE,
+     FINGERPRINT_PERMISSION_DENIED,
+     FINGERPRINT_PERMISSION_DENIED_SHOW_REQUEST,
+     ILLEGAL_BLOCK_SIZE_EXCEPTION,
+     INIT_CIPHER_FAILED,
+     INVALID_ALGORITHM_PARAMETER_EXCEPTION,
+     IO_EXCEPTION,
+     JSON_EXCEPTION,
+     MINIMUM_SDK,
+     MISSING_ACTION_PARAMETERS,
+     MISSING_PARAMETERS,
+     NO_SUCH_ALGORITHM_EXCEPTION,
+     SECURITY_EXCEPTION
+    ```
+
+###Breaking Changes
+* Changed error message for cancelled from "Cancelled" to fixed error code `FingerprintAuth.ERRORS.FINGERPRINT_CANCELLED`
+
 #Version 1.2.6
 ###What's New
 * **Bug fix** for issue #61 - added missing source-file element for German strings to plugin.xml
