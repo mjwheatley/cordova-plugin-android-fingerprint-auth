@@ -1,5 +1,5 @@
-#Version 1.2.7
-###What's New
+# Version 1.2.7
+### What's New
 * Improved German translations - pull request #58
 * **Bug fix** for issue #57 - deleting secret key in Android Keystore.
 * Added fixed error codes - pull request #56
@@ -25,34 +25,34 @@
      SECURITY_EXCEPTION
     ```
 
-###Breaking Changes
+### Breaking Changes
 * Changed error message for cancelled from "Cancelled" to fixed error code `FingerprintAuth.ERRORS.FINGERPRINT_CANCELLED`
 
-#Version 1.2.6
-###What's New
+# Version 1.2.6
+### What's New
 * **Bug fix** for issue #61 - added missing source-file element for German strings to plugin.xml
 
-#Version 1.2.5
-###What's New
+# Version 1.2.5
+### What's New
 * **Bug fix** for issue #46 - Dismiss fragment in a safer way
 
-#Version 1.2.4
-###What's New
+# Version 1.2.4
+### What's New
 * Updated `build-extras.gradle` to use Android SDK 25.
 
-#Version 1.2.3
-###What's New
+# Version 1.2.3
+### What's New
 * German translations
 
-#Version 1.2.2
-###What's New
+# Version 1.2.2
+### What's New
 * **Bug fix** - `isAvailable()` returning message "Missing required parameters".
 * Added `build-extras.gradle` to add dependency `com.android.support:support-v4:23.0.0`  to check for manifest permissions.
 * Added check and request for permission to use fingerprints.
 * Added error handling for `SecurityException`
 
-#Version 1.2.0
-###What's New
+# Version 1.2.0
+### What's New
 * Removed `FingerprintAuth.CipherMode`
 * Removed `FingerprintAuth.show() ` in favor of separate actions for encrypt and decrypt
 * Added `FingerprintAuth.encrypt()`
@@ -60,14 +60,14 @@
 * Made `username` optional
 * `token` is required for `decrypt()`
 
-###Breaking Changes
+### Breaking Changes
 * Removed `FingerprintAuth.CipherMode`
 * Removed `FingerprintAuth.show() ` in favor of separate actions for encrypt and decrypt
 
 
-#Version 1.1.0
+# Version 1.1.0
 Introducing encryption and decryption of user credentials.
-###What's New
+### What's New
 * **Added parameters to the FingerprintAuth Config Object**
 
 | Param | Type | Description |
@@ -89,12 +89,9 @@ Introducing encryption and decryption of user credentials.
 
 * **New method FingerprintAuth.delete() to delete the cipher used to encrypt/decrypt user credentials.**
 
-###Breaking changes
+### Breaking changes
 
 * Removed `clientSecret` parameter from the FingerprintAuth Config Object.
-
 * Added new **required parameters** `cipherMode` and `username`.
-
 * FingerprintAuth.show() result `withFingerprint` is now a boolean.  You will need to obtain the encrypted token from the `token` field.
-
 * FingerprintAuth.show() result `withPassword` was changed to `withBackup`
