@@ -15,7 +15,6 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="cancel">取消</string>
     <string name="use_backup">使用备份</string>
     <string name="fingerprint_auth_dialog_title">指纹认证</string>
     <string name="ok">确定</string>
