@@ -15,7 +15,6 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="cancel">Отмена</string>
     <string name="use_backup">Использовать резервный код</string>
     <string name="fingerprint_auth_dialog_title">Аутентификация по отпечатку пальца</string>
     <string name="ok">Ok</string>
