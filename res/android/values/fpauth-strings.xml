@@ -15,7 +15,6 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="cancel">Cancel</string>
     <string name="use_backup">Use backup</string>
     <string name="fingerprint_auth_dialog_title">Fingerprint Authentication</string>
     <string name="ok">Ok</string>
