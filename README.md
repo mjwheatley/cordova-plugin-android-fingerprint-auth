@@ -1,6 +1,9 @@
 # Update to Version 1.2.0
 Please consult the [changelog](https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth/blob/master/changelog.md).
 
+# Attention
+This plugin misses the "cancel" string translation. We adopted it for our buildprocess.
+
 # About
 This plugin was created referencing the [Fingerprint Dialog sample](http://developer.android.com/samples/FingerprintDialog/index.html) and the [Confirm Credential sample](http://developer.android.com/samples/ConfirmCredential/index.html) referenced by the [Android 6.0 APIs webpage](http://developer.android.com/about/versions/marshmallow/android-6.0.html).
 
@@ -16,13 +19,7 @@ This plugin will only work on devices whose manufacturers have implemented the A
 
 # Installation
 ### Cordova
-`cordova plugin add cordova-plugin-android-fingerprint-auth`
-
-### Ionic
-`ionic plugin add cordova-plugin-android-fingerprint-auth`
-
-### Meteor
-`meteor add cordova:cordova-plugin-android-fingerprint-auth`
+`cordova plugin add https://github.com/lxAppDev/cordova-plugin-android-fingerprint-auth.git`
 
 # How to use
 - Call `isAvailable()` to check the fingerprint status.
