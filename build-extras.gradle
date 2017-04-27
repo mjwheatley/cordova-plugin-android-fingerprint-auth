@@ -1,5 +1,5 @@
 android {
-    compileSdkVersion 25
+    compileSdkVersion 24
     buildToolsVersion "25.0.1"
     packagingOptions {
         exclude 'META-INF/LICENSE'
@@ -9,5 +9,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
 }
