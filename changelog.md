@@ -1,3 +1,6 @@
+#Version 1.2.7
+* **Bug fix** for issue #52 - Code update/refactor. Dismiss opened dialog on pause event to avoid doubling it on resume if app was closed by OS
+
 #Version 1.2.6
 * **Bug fix** for issue #54 - Show fragment allowing state loss
 #Version 1.2.5
