@@ -22,7 +22,7 @@ This plugin will only work on devices whose manufacturers have implemented the A
 `ionic cordova plugin add cordova-plugin-android-fingerprint-auth`
 
 ### Meteor
-`meteor add cordova:cordova-plugin-android-fingerprint-auth`
+`meteor add cordova:cordova-plugin-android-fingerprint-auth@1.2.7 (or present version)`
 
 # How to use
 - Call `isAvailable()` to check the fingerprint status.
