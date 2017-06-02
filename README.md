@@ -19,7 +19,7 @@ This plugin will only work on devices whose manufacturers have implemented the A
 `cordova plugin add cordova-plugin-android-fingerprint-auth`
 
 ### Ionic
-`ionic plugin add cordova-plugin-android-fingerprint-auth`
+`ionic cordova plugin add cordova-plugin-android-fingerprint-auth`
 
 ### Meteor
 `meteor add cordova:cordova-plugin-android-fingerprint-auth`
