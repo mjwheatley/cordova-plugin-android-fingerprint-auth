@@ -154,9 +154,9 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     @Override
     public void onPause() {
         super.onPause();
-        mFingerprintUiHelper.stopListening();
         // Dismiss dialog to avoid doubling it on resume if app was closed by OS
-        onStop();
+        dismissAllowingStateLoss();
+        mFingerprintUiHelper.stopListening();
     }
 
     /**
@@ -258,7 +258,6 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     @Override
     public void onStop() {
-        dismissAllowingStateLoss();
         super.onStop();
     }
 
