@@ -10,6 +10,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -56,6 +57,7 @@ public class FingerprintAuth extends CordovaPlugin {
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     public static final String FINGERPRINT_PREF_IV = "aes_iv";
     private static final int PERMISSIONS_REQUEST_FINGERPRINT = 346437;
+    private static final int REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS = 1;
 
     public static Context mContext;
     public static Activity mActivity;
@@ -178,7 +180,7 @@ public class FingerprintAuth extends CordovaPlugin {
      * Executes the request and returns PluginResult.
      *
      * @param action          The action to execute.
-     * @param args            JSONArry of arguments for the plugin.
+     * @param args            JSONArray of arguments for the plugin.
      * @param callbackContext The callback id used when calling back into JavaScript.
      * @return A PluginResult object with a status and message.
      */
@@ -342,10 +344,25 @@ public class FingerprintAuth extends CordovaPlugin {
                             mCallbackContext.sendPluginResult(mPluginResult);
                         }
                     } else {
-                        Log.e(TAG, "Fingerprint authentication not available");
-                        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error(PluginError.FINGERPRINT_NOT_AVAILABLE.name());
-                        mCallbackContext.sendPluginResult(mPluginResult);
+                        /***
+                        Use backup
+                        */
+                        Log.v(TAG, "In backup");
+                        if (useBackupLockScreen() == true) {
+                          Log.v(TAG, "useBackupLockScreen: true");
+                        } else {
+                          Log.v(TAG, "useBackupLockScreen: false");
+                        }
+
+                        if (useBackupLockScreen()) {
+                          showAuthenticationScreen();
+                        } else {
+                          Log.e(TAG, "Fingerprint authentication not available");
+                          mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+                          mCallbackContext.error(PluginError.FINGERPRINT_NOT_AVAILABLE.name());
+                          mCallbackContext.sendPluginResult(mPluginResult);
+                        }
+
                     }
                     return true;
                 case DELETE:
@@ -354,12 +371,12 @@ public class FingerprintAuth extends CordovaPlugin {
                     try {
                         mKeyStore.deleteEntry(mClientId);
                         secretKeyDeleted = true;
-                        ivDeleted = deleteIV();                    
+                        ivDeleted = deleteIV();
                     } catch (KeyStoreException e) {
                         Log.e(TAG, "Error while deleting SecretKey.");
                     }
-                   
-                    if (ivDeleted && secretKeyDeleted) {  
+
+                    if (ivDeleted && secretKeyDeleted) {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
                         mCallbackContext.success();
                     } else {
@@ -697,4 +714,37 @@ public class FingerprintAuth extends CordovaPlugin {
 
         return editor.remove(key).commit();
     }
+
+    /*********************************************************************
+        Backup for older devices without fingerprint hardware/software
+    **********************************************************************/
+    private boolean useBackupLockScreen() {
+        if (!mKeyguardManager.isKeyguardSecure()) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    private void showAuthenticationScreen() {
+        Intent intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
+        if (intent != null) {
+          cordova.getActivity().startActivityForResult(intent, REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS) {
+            if (resultCode == cordova.getActivity().RESULT_OK) {
+              onAuthenticated(false, null);
+            } else {
+              onCancelled();
+            }
+        }
+    }
+
+
+
 }
