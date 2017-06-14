@@ -8,6 +8,7 @@ import org.apache.cordova.CordovaInterface;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -322,14 +323,18 @@ public class FingerprintAuth extends CordovaPlugin {
                                         // Show the fingerprint dialog. The user has the option to use the fingerprint with
                                         // crypto, or you can fall back to using a server-side verified password.
                                         mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                                        mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                                        FragmentTransaction transaction = cordova.getActivity().getFragmentManager().beginTransaction();
+                                        transaction.add(mFragment, DIALOG_FRAGMENT_TAG);
+                                        transaction.commitAllowingStateLoss();
                                     } else {
                                         if (!mDisableBackup) {
                                             // This happens if the lock screen has been disabled or or a fingerprint got
                                             // enrolled. Thus show the dialog to authenticate with their password
                                             mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
                                             mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
-                                            mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
+                                            FragmentTransaction transaction = cordova.getActivity().getFragmentManager().beginTransaction();
+                                            transaction.add(mFragment, DIALOG_FRAGMENT_TAG);
+                                            transaction.commitAllowingStateLoss();
                                         } else {
                                             Log.e(TAG, "Failed to init Cipher and backup disabled.");
                                             mCallbackContext.error(PluginError.INIT_CIPHER_FAILED.name());
