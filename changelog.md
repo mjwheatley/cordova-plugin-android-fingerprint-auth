@@ -1,3 +1,15 @@
+# Version 1.2.8
+### What's New
+* Updates to README
+* Merge pull request #66 from videmort/master: Update Spanish literal
+* Merge pull request #65 from nataze/backup-PIN: PIN fallback when fingerprint isn't supported
+* **Bug fix** for issue #54
+    * Allow state loss of dialog fragment
+* Changed manifest permission check
+    * Now using cordova.hasPermission()
+    * Removed dependency on android.support.v4 library
+        * Removed build-extras.gradle
+
 # Version 1.2.7
 ### What's New
 * Improved German translations - pull request #58
