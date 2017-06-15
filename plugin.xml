@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-android-fingerprint-auth"
-        version="1.2.8">
+        version="1.3.0">
     <name>FingerprintAuth</name>
     <description>Cordova plugin to use Android fingerprint authentication API</description>
     <license>Apache 2.0</license>

@@ -574,36 +574,37 @@ public class FingerprintAuth extends CordovaPlugin {
         boolean createdResultJson = false;
 
         try {
+            byte[] bytes;
+            FingerprintManager.CryptoObject cryptoObject;
+
             if (withFingerprint) {
-                // If the user has authenticated with fingerprint, verify that using cryptography and
-                // then return the encrypted (in Base 64) or decrypted mClientSecret
-                byte[] bytes;
-                if (mCipherModeCrypt) {
-                    bytes = result.getCryptoObject().getCipher()
-                            .doFinal(mClientSecret.getBytes("UTF-8"));
-                    String encodedBytes = Base64.encodeToString(bytes, Base64.NO_WRAP);
-                    resultJson.put("token", encodedBytes);
-                } else {
-                    bytes = result.getCryptoObject().getCipher()
-                            .doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
-                    String credentialString = new String(bytes, "UTF-8");
-                    String[] credentialArray = credentialString.split(":");
-                    if (credentialArray.length == 2) {
-                        String username = credentialArray[0];
-                        String password = credentialArray[1];
-                        if (username.equalsIgnoreCase(mClientId + mUsername)) {
-                            resultJson.put("password", credentialArray[1]);
-                        }
-                    }
-                }
                 resultJson.put("withFingerprint", true);
+                cryptoObject = result.getCryptoObject();
             } else {
-                // Authentication happened with backup password.
                 resultJson.put("withBackup", true);
+                cryptoObject= new FingerprintManager.CryptoObject(mCipher);
 
                 // If failed to init cipher because of InvalidKeyException, create new key
                 if (!initCipher()) {
                     createKey();
+                }
+            }
+
+            if (mCipherModeCrypt) {
+                bytes = cryptoObject.getCipher().doFinal(mClientSecret.getBytes("UTF-8"));
+                String encodedBytes = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                resultJson.put("token", encodedBytes);
+            } else {
+                bytes = cryptoObject.getCipher()
+                        .doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
+                String credentialString = new String(bytes, "UTF-8");
+                String[] credentialArray = credentialString.split(":");
+                if (credentialArray.length == 2) {
+                    String username = credentialArray[0];
+                    String password = credentialArray[1];
+                    if (username.equalsIgnoreCase(mClientId + mUsername)) {
+                        resultJson.put("password", credentialArray[1]);
+                    }
                 }
             }
             createdResultJson = true;

@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-android-fingerprint-auth",
-  "version": "1.2.8",
+  "version": "1.3.0",
   "description": "Cordova plugin to use Android fingerprint authentication API",
   "cordova": {
     "id": "cordova-plugin-android-fingerprint-auth",

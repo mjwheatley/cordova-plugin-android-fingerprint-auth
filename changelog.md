@@ -1,3 +1,8 @@
+# Version 1.3.0
+### What's New
+* Fixed issue #85 No token returned when using PIN backup
+    * Authentication with backup credentials will now use cryptography to encrypt or decrypt a token.
+
 # Version 1.2.8
 ### What's New
 * Updates to README
