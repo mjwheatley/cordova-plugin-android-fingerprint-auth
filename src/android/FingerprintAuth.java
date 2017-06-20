@@ -576,7 +576,7 @@ public class FingerprintAuth extends CordovaPlugin {
 
         try {
             byte[] bytes;
-            FingerprintManager.CryptoObject cryptoObject;
+            FingerprintManager.CryptoObject cryptoObject = null;
 
             if (withFingerprint) {
                 resultJson.put("withFingerprint", true);
