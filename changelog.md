@@ -1,3 +1,7 @@
+# Version 1.3.1
+### What's New
+* **Bug fix** for issue #86
+
 # Version 1.3.0
 ### What's New
 * Fixed issue #85 No token returned when using PIN backup
