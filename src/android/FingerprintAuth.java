@@ -715,6 +715,7 @@ public class FingerprintAuth extends CordovaPlugin {
     private void showAuthenticationScreen() {
         Intent intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
         if (intent != null) {
+          cordova.setActivityResultCallback(this);
           cordova.getActivity().startActivityForResult(intent, REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS);
         }
     }
