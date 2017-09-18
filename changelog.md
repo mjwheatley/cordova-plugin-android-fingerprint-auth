@@ -1,3 +1,13 @@
+# Version 1.4.0
+### What's New
+* new parameter `encryptNoAuth`
+    * Encrypt input without displaying authentication dialog
+* removed parameter `userAuthRequired`
+    * userAuthRequired will always be set to `false`
+        * This fixes issue#85 and issue #88
+* changed credential delimiter
+    * backwards compatible - will be able to decrypt tokens created by prior versions of this plugin.
+
 # Version 1.3.1
 ### What's New
 * **Bug fix** for issue #86
