@@ -4,7 +4,8 @@
     * Encrypt input without displaying authentication dialog
 * removed parameter `userAuthRequired`
     * userAuthRequired will always be set to `false`
-        * This fixes issue#85 and issue #88
+        * This fixes issue #85 and issue #88
+        * Developers using default setting for this value (did not explicitly set `userAuthRequired` to `false`) should add a call to `FingerprintAuth.delete()` and re-encrypt credentials to regenerate a new secret key that will allow backup authentication to encrypt/decrypt using the new secret key.  This should fix any `ILLEGAL_BLOCK_SIZE_EXCEPTION` messages when using backup authentication.
 * changed credential delimiter
     * backwards compatible - will be able to decrypt tokens created by prior versions of this plugin.
 
