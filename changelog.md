@@ -1,3 +1,9 @@
+# Version 1.4.1
+### What's New
+* **Bug fix** for issue #98
+    * Use `resource-file` tag for resources instead of `source-file`
+
+
 # Version 1.4.0
 ### What's New
 * new parameter `encryptNoAuth`
