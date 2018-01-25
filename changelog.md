@@ -1,3 +1,8 @@
+# Version 1.4.2
+### What's New
+* Feature request for issue #100
+    * added back the `userAuthRequired` param but set default to `false`
+
 # Version 1.4.1
 ### What's New
 * **Bug fix** for issue #98

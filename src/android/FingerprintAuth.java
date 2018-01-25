@@ -120,6 +120,7 @@ public class FingerprintAuth extends CordovaPlugin {
     public static boolean mDisableBackup = false;
     public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
     private String mLangCode = "en_US";
+    private static boolean mUserAuthRequired = false;
     public static String mDialogTitle;
     public static String mDialogMessage;
     public static String mDialogHint;
@@ -286,6 +287,9 @@ public class FingerprintAuth extends CordovaPlugin {
                         if (maxAttempts < 5) {
                             mMaxAttempts = maxAttempts;
                         }
+                    }
+                    if (arg_object.has("userAuthRequired")) {
+                        mUserAuthRequired = arg_object.getBoolean("userAuthRequired");
                     }
                     if (arg_object.has("dialogTitle")) {
                         mDialogTitle = arg_object.getString("dialogTitle");
@@ -548,7 +552,7 @@ public class FingerprintAuth extends CordovaPlugin {
             mKeyGenerator.init(new KeyGenParameterSpec.Builder(mClientId,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                    .setUserAuthenticationRequired(false)
+                    .setUserAuthenticationRequired(mUserAuthRequired)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                     .build());
             mKeyGenerator.generateKey();
