@@ -1,3 +1,9 @@
+# Version 1.4.3
+### What's New
+* Added Thai translations
+    * merged pull request #102
+
+
 # Version 1.4.2
 ### What's New
 * Feature request for issue #100
