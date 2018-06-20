@@ -1,3 +1,10 @@
+# Version 1.4.4
+### What's New
+* Added Arabic translations
+    * merged pull request #114
+* Bug fix: KeyStore not initialized when trying to delete entry
+    * merged pull request #106
+
 # Version 1.4.3
 ### What's New
 * Added Thai translations
