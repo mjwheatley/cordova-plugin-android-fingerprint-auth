@@ -25,5 +25,5 @@
     <string name="fingerprint_success">Fingerabdruck erkannt.</string>
     <string name="new_fingerprint_enrolled_description">Ein neuer Fingerabdruck wurde dem Gerät hinzugefügt, deshalb ist Ihr Passwort nötig.</string>
     <string name="secure_lock_screen_required">Ihr Muster ist benötigt!</string>
-    <string name="fingerprint_too_many_attempts">Zu viele Versuche. Bitte später nochmals versuchen</string>
+    <string name="fingerprint_too_many_attempts">Zu viele Versuche. Bitte später nochmals versuchen.</string>
 </resources>
