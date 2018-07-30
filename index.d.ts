@@ -1,4 +1,4 @@
-export const enum ERRORS {
+export const enum IFingerprintAuthErrors {
     BAD_PADDING_EXCEPTION = "BAD_PADDING_EXCEPTION",
     CERTIFICATE_EXCEPTION = "CERTIFICATE_EXCEPTION",
     FINGERPRINT_CANCELLED = "FINGERPRINT_CANCELLED",
@@ -17,7 +17,6 @@ export const enum ERRORS {
     MISSING_PARAMETERS = "MISSING_PARAMETERS",
     NO_SUCH_ALGORITHM_EXCEPTION = "NO_SUCH_ALGORITHM_EXCEPTION"
 }
-
 
 /**
  * The Cordova "FingerprintAuth" plugin
@@ -39,7 +38,7 @@ interface IFingerprintAuth {
      *
      * @param {FingerprintAuthConfig} encryptConfig - Encrypt config.
      * @param {FingerprintAuthEncryptSuccess} encryptSuccessCallback - Encrypt success callback.
-     * @param {ERRORS} encryptErrorCallback - Encrypt error callback.
+     * @param {IFingerprintAuthErrors} encryptErrorCallback - Encrypt error callback.
      */
     encrypt(encryptConfig, encryptSuccessCallback, encryptErrorCallback): void;
 
@@ -48,7 +47,7 @@ interface IFingerprintAuth {
      *
      * @param {FingerprintAuthConfig} decryptConfig - decryptConfig.
      * @param {FingerprintAuthDecryptSuccess} encryptSuccessCallback - Encrypt success callback.
-     * @param {ERRORS} encryptErrorCallback - Encrypt error callback.
+     * @param {IFingerprintAuthErrors} encryptErrorCallback - Encrypt error callback.
      */
     decrypt(decryptConfig, encryptSuccessCallback, encryptErrorCallback): void;
 
