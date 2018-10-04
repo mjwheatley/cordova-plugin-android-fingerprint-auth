@@ -1,3 +1,12 @@
+# Version 1.4.5
+### What's New
+* Added Korean translations
+    * merged pull request #125
+* Added index.d.ts for Typescript support
+    * merged pull request #118
+* Update German strings
+    * merged pull request #117
+
 # Version 1.4.4
 ### What's New
 * Added Arabic translations
