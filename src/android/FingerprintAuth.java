@@ -77,7 +77,8 @@ public class FingerprintAuth extends CordovaPlugin {
         AVAILABILITY,
         ENCRYPT,
         DECRYPT,
-        DELETE
+        DELETE,
+        DISMISS
     }
 
     public enum PluginError {
@@ -98,7 +99,8 @@ public class FingerprintAuth extends CordovaPlugin {
         MISSING_ACTION_PARAMETERS,
         MISSING_PARAMETERS,
         NO_SUCH_ALGORITHM_EXCEPTION,
-        SECURITY_EXCEPTION
+        SECURITY_EXCEPTION,
+        FRAGMENT_NOT_EXIST
     }
 
     public PluginAction mAction;
@@ -210,6 +212,8 @@ public class FingerprintAuth extends CordovaPlugin {
             mCipherModeCrypt = false;
         } else if (action.equals("delete")) {
             mAction = PluginAction.DELETE;
+        } else if (action.equals("dismiss")) {
+            mAction = PluginAction.DISMISS;
         }
 
         if (mAction != null) {
@@ -217,7 +221,7 @@ public class FingerprintAuth extends CordovaPlugin {
 
             JSONObject resultJson = new JSONObject();
 
-            if (mAction != PluginAction.AVAILABILITY) {
+            if (mAction != PluginAction.AVAILABILITY && mAction != PluginAction.DISMISS) {
                 if (!arg_object.has("clientId")) {
                     Log.e(TAG, "Missing required parameters.");
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -412,6 +416,17 @@ public class FingerprintAuth extends CordovaPlugin {
                         mCallbackContext.error(PluginError.FINGERPRINT_DATA_NOT_DELETED.name());
                     }
                     mCallbackContext.sendPluginResult(mPluginResult);
+                    return true;
+                case DISMISS:
+                    if (null != mFragment) {
+                        cordova.getActivity().getFragmentManager()
+                                .beginTransaction().remove(mFragment).commit();
+                        mPluginResult = new PluginResult(PluginResult.Status.OK);
+                        mCallbackContext.success("Fragment dismissed");
+                        mCallbackContext.sendPluginResult(mPluginResult);
+                    } else {
+                        setPluginResultError(PluginError.FRAGMENT_NOT_EXIST.name());
+                    }
                     return true;
             }
         }
