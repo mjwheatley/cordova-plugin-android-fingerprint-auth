@@ -54,6 +54,7 @@ If you are not concerned with encrypting credentials and just want device authen
     * [encrypt(encryptConfig, successCallback, errorCallback)](#module_fingerprintauth.encrypt)
     * [decrypt(decryptConfig, successCallback, errorCallback)](#module_fingerprintauth.decrypt)  
     * [delete(deleteConfg, successCallback, errorCallback)](#module_fingerprintauth.delete)
+    * [dismiss(successCallback, errorCallback)](#module_fingerprintauth.dismiss)
     * [ERRORS](#module_fingerprintauth.errors)
 * [Config Object](#module_fingerprintauth.config)
 
@@ -233,6 +234,26 @@ function errorCallback(error) {
 }
 ```
 
+<a name="module_fingerprintauth.dismiss"></a>
+
+# FingerprintAuth.dismiss(successCallback, errorCallback)
+
+Used to dismiss a Fingerprint Authentication Dialog if one is being displayed
+
+**Example**
+
+```javascript
+FingerprintAuth.dismiss(successCallback, errorCallback);
+
+function successCallback(result) {
+    console.log("Successfully dismissed FingerprintAuth dialog: " + JSON.stringify(result));
+}
+
+function errorCallback(error) {
+    console.log(error);
+}
+```
+
 
 <a name="module_fingerprintauth.errors"></a>
 
@@ -257,3 +278,4 @@ function errorCallback(error) {
 | MISSING_PARAMETERS | String | "MISSING_PARAMETERS" |
 | NO_SUCH_ALGORITHM_EXCEPTION | String | "NO_SUCH_ALGORITHM_EXCEPTION" |
 | SECURITY_EXCEPTION | String | "SECURITY_EXCEPTION" |
+| FRAGMENT_NOT_EXIST | String | "FRAGMENT_NOT_EXIST |

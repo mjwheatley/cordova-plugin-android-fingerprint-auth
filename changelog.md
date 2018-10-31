@@ -1,3 +1,7 @@
+# Version 1.50
+### What's New
+* Added new `dismiss()` action
+
 # Version 1.4.5
 ### What's New
 * Added Korean translations
