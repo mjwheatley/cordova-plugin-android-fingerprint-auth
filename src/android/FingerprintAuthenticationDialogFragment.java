@@ -25,9 +25,11 @@ import android.content.SharedPreferences;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -138,6 +140,11 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         int new_fingerprint_enrolled_description_id = getResources()
                 .getIdentifier("new_fingerprint_enrolled_description", "id",
                         FingerprintAuth.packageName);
+
+        // Explicitly center the dialog
+        WindowManager.LayoutParams layoutParams = this.getDialog().getWindow().getAttributes();
+        layoutParams.gravity = Gravity.CENTER;
+        this.getDialog().getWindow().setAttributes(layoutParams);
 
         int fingerprint_icon_id = getResources()
                 .getIdentifier("fingerprint_icon", "id", FingerprintAuth.packageName);
