@@ -297,12 +297,18 @@ public class FingerprintAuth extends CordovaPlugin {
                     }
                     if (arg_object.has("dialogTitle")) {
                         mDialogTitle = arg_object.getString("dialogTitle");
+                    } else {
+                        mDialogTitle = null;
                     }
                     if (arg_object.has("dialogMessage")) {
                         mDialogMessage = arg_object.getString("dialogMessage");
+                    } else {
+                        mDialogMessage = null;
                     }
                     if (arg_object.has("dialogHint")) {
                         mDialogHint = arg_object.getString("dialogHint");
+                    } else {
+                        mDialogHint = null;
                     }
 
                     // Set language
