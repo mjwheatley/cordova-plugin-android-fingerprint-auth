@@ -18,8 +18,8 @@ package com.cordova.plugin.android.fingerprintauth;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.hardware.fingerprint.FingerprintManager;
-import android.os.CancellationSignal;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
+import android.support.v4.os.CancellationSignal;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,19 +28,19 @@ import android.widget.TextView;
  * Small helper class to manage text/icon around fingerprint authentication UI.
  */
 @TargetApi(23)
-public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallback {
+public class FingerprintUiHelper extends FingerprintManagerCompat.AuthenticationCallback {
 
     static final long ERROR_TIMEOUT_MILLIS = 1600;
     static final long SUCCESS_DELAY_MILLIS = 1300;
 
     private final Context mContext;
-    private final FingerprintManager mFingerprintManager;
+    private final FingerprintManagerCompat mFingerprintManagerCompat;
     private final ImageView mIcon;
     private final TextView mErrorTextView;
     private final Callback mCallback;
     private CancellationSignal mCancellationSignal;
     private int mAttempts = 0;
-    private static FingerprintManager.AuthenticationResult fingerprintResult;
+    private static FingerprintManagerCompat.AuthenticationResult fingerprintResult;
 
     boolean mSelfCancelled;
 
@@ -49,16 +49,16 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
      * holds its fields and takes other arguments in the {@link #build} method.
      */
     public static class FingerprintUiHelperBuilder {
-        private final FingerprintManager mFingerPrintManager;
+        private final FingerprintManagerCompat mFingerprintManagerCompat;
         private final Context mContext;
 
-        public FingerprintUiHelperBuilder(Context context, FingerprintManager fingerprintManager) {
-            mFingerPrintManager = fingerprintManager;
+        public FingerprintUiHelperBuilder(Context context, FingerprintManagerCompat FingerprintManagerCompat) {
+            mFingerprintManagerCompat = FingerprintManagerCompat;
             mContext = context;
         }
 
         public FingerprintUiHelper build(ImageView icon, TextView errorTextView, Callback callback) {
-            return new FingerprintUiHelper(mContext, mFingerPrintManager, icon, errorTextView,
+            return new FingerprintUiHelper(mContext, mFingerprintManagerCompat, icon, errorTextView,
                     callback);
         }
     }
@@ -67,9 +67,9 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
      * Constructor for {@link FingerprintUiHelper}. This method is expected to be called from
      * only the {@link FingerprintUiHelperBuilder} class.
      */
-    private FingerprintUiHelper(Context context, FingerprintManager fingerprintManager,
+    private FingerprintUiHelper(Context context, FingerprintManagerCompat FingerprintManagerCompat,
             ImageView icon, TextView errorTextView, Callback callback) {
-        mFingerprintManager = fingerprintManager;
+        mFingerprintManagerCompat = FingerprintManagerCompat;
         mIcon = icon;
         mErrorTextView = errorTextView;
         mCallback = callback;
@@ -77,18 +77,18 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
     }
 
     public boolean isFingerprintAuthAvailable() {
-        return mFingerprintManager.isHardwareDetected()
-                && mFingerprintManager.hasEnrolledFingerprints();
+        return mFingerprintManagerCompat.isHardwareDetected()
+                && mFingerprintManagerCompat.hasEnrolledFingerprints();
     }
 
-    public void startListening(FingerprintManager.CryptoObject cryptoObject) {
+    public void startListening(FingerprintManagerCompat.CryptoObject cryptoObject) {
         if (!isFingerprintAuthAvailable()) {
             return;
         }
         mCancellationSignal = new CancellationSignal();
         mSelfCancelled = false;
-        mFingerprintManager
-                .authenticate(cryptoObject, mCancellationSignal, 0 /* flags */, this, null);
+        mFingerprintManagerCompat
+                .authenticate(cryptoObject, 0 /* flags */, mCancellationSignal, this, null);
 
         int ic_fp_40px_id = mContext.getResources()
                 .getIdentifier("ic_fp_40px", "drawable", FingerprintAuth.packageName);
@@ -147,7 +147,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
     }
 
     @Override
-    public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
+    public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
         fingerprintResult = result;
         mErrorTextView.removeCallbacks(mResetErrorTextRunnable);
         int ic_fingerprint_success_id = mContext.getResources()
@@ -201,7 +201,7 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
 
     public interface Callback {
 
-        void onAuthenticated(FingerprintManager.AuthenticationResult result);
+        void onAuthenticated(FingerprintManagerCompat.AuthenticationResult result);
 
         void onError(CharSequence errString);
     }
