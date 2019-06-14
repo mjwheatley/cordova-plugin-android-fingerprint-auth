@@ -49,16 +49,14 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
      * holds its fields and takes other arguments in the {@link #build} method.
      */
     public static class FingerprintUiHelperBuilder {
-        private final FingerprintManagerCompat mFingerprintManagerCompat;
         private final Context mContext;
 
-        public FingerprintUiHelperBuilder(Context context, FingerprintManagerCompat FingerprintManagerCompat) {
-            mFingerprintManagerCompat = FingerprintManagerCompat;
+        public FingerprintUiHelperBuilder(Context context) {
             mContext = context;
         }
 
         public FingerprintUiHelper build(ImageView icon, TextView errorTextView, Callback callback) {
-            return new FingerprintUiHelper(mContext, mFingerprintManagerCompat, icon, errorTextView,
+            return new FingerprintUiHelper(mContext, icon, errorTextView,
                     callback);
         }
     }
@@ -67,9 +65,8 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
      * Constructor for {@link FingerprintUiHelper}. This method is expected to be called from
      * only the {@link FingerprintUiHelperBuilder} class.
      */
-    private FingerprintUiHelper(Context context, FingerprintManagerCompat FingerprintManagerCompat,
-            ImageView icon, TextView errorTextView, Callback callback) {
-        mFingerprintManagerCompat = FingerprintManagerCompat;
+    private FingerprintUiHelper(Context context, ImageView icon, TextView errorTextView, Callback callback) {
+        mFingerprintManagerCompat = FingerprintManagerCompat.from(context);
         mIcon = icon;
         mErrorTextView = errorTextView;
         mCallback = callback;

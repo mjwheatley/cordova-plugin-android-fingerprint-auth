@@ -69,8 +69,7 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Material_Light_Dialog);
 
         mKeyguardManager = (KeyguardManager) getActivity().getSystemService(Context.KEYGUARD_SERVICE);
-        mFingerprintUiHelperBuilder = new FingerprintUiHelper.FingerprintUiHelperBuilder(
-                getActivity(), getActivity().getSystemService(FingerprintManagerCompat.class));
+        mFingerprintUiHelperBuilder = new FingerprintUiHelper.FingerprintUiHelperBuilder(getActivity());
 
     }
 
