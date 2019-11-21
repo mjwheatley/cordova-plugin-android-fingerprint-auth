@@ -60,6 +60,13 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Gracefully close the Fingerprint dialog when plugin data is unrecoverable,
+        // possibly due to the OS killing the app while in the background.
+        if(FingerprintAuth.packageName == null){
+            Log.e(TAG, "Internal data loss, dismissing dialog");
+            dismissAllowingStateLoss();
+        }
+
         super.onCreate(savedInstanceState);
 
         // Do not create a new Fragment when the Activity is re-created such as orientation changes.
