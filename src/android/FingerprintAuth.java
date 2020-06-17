@@ -441,18 +441,27 @@ public class FingerprintAuth extends CordovaPlugin {
         String errorMessage = null;
         JSONObject resultJson = new JSONObject();
         try {
+          if (mFingerPrintManager == null) {
+            resultJson.put("isAvailable", false);
+            resultJson.put("isHardwareDetected", false);
+            resultJson.put("hasEnrolledFingerprints", false);
+            mPluginResult = new PluginResult(PluginResult.Status.OK);
+            mCallbackContext.success(resultJson);
+            mCallbackContext.sendPluginResult(mPluginResult);
+          } else {
             resultJson.put("isAvailable", isFingerprintAuthAvailable());
             resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
             resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints());
             mPluginResult = new PluginResult(PluginResult.Status.OK);
             mCallbackContext.success(resultJson);
             mCallbackContext.sendPluginResult(mPluginResult);
+          }
         } catch (JSONException e) {
-            Log.e(TAG, "Availability Result Error: JSONException: " + e.toString());
-            errorMessage = PluginError.JSON_EXCEPTION.name();
+          Log.e(TAG, "Availability Result Error: JSONException: " + e.toString());
+          errorMessage = PluginError.JSON_EXCEPTION.name();
         } catch (SecurityException e) {
-            Log.e(TAG, "Availability Result Error: SecurityException: " + e.toString());
-            errorMessage = PluginError.SECURITY_EXCEPTION.name();
+          Log.e(TAG, "Availability Result Error: SecurityException: " + e.toString());
+          errorMessage = PluginError.SECURITY_EXCEPTION.name();
         }
         if (null != errorMessage) {
             Log.e(TAG, errorMessage);
