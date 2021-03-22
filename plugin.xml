@@ -57,6 +57,7 @@
         <resource-file src="res/android/values-th" target="res/values-th" />
         <resource-file src="res/android/values-ar" target="res/values-ar" />
         <resource-file src="res/android/values-ko" target="res/values-ko" />
+        <resource-file src="res/android/values-gr" target="res/values-gr" />
     </platform>
 
 </plugin>
