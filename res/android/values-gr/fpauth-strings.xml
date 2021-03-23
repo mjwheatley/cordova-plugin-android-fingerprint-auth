@@ -16,14 +16,14 @@
   -->
 <resources>
     <string name="cancel">ΑΚΥΡΟ</string>
-    <string name="use_backup">ΧΡΗΣΗ BACKUP</string>
+    <string name="use_backup">ΧΡΗΣΗ ΕΦΕΔΡΙΚΟΥ</string>
     <string name="fingerprint_auth_dialog_title">Ταυτοποίηση Δακτυλικού Αποτυπώματος</string>
     <string name="ok">ΟΚ</string>
     <string name="fingerprint_description">Επιβεβαιώστε το δακτυλικό αποτύπωμα για να συνεχίσετε</string>
     <string name="fingerprint_hint">Αισθητήρας αφής</string>
-    <string name="fingerprint_not_recognized">Το δακτυλικό αποτύπωμα δεν αναγνωρίστηκε. Προσπάθησε ξανά.</string>
+    <string name="fingerprint_not_recognized">Το δακτυλικό αποτύπωμα δεν αναγνωρίστηκε. Προσπαθήστε ξανά.</string>
     <string name="fingerprint_success">Δακτυλικό αποτύπωμα αναγνωρίστηκε</string>
     <string name="new_fingerprint_enrolled_description">Ένα νέο δακτυλικό αποτύπωμα προστέθηκε σε αυτήν τη συσκευή, επομένως απαιτείται κωδικός πρόσβασης.</string>
     <string name="secure_lock_screen_required">Απαιτείται ασφαλής οθόνη κλειδώματος!</string>
-    <string name="fingerprint_too_many_attempts">Πάρα πολλές προσπάθειες. Προσπαθήστε ξανά αργότερα.</string>
+    <string name="fingerprint_too_many_attempts">Πάρα πολλές προσπάθειες. Προσπαθήστε ξανά σε λίγο.</string>
 </resources>
