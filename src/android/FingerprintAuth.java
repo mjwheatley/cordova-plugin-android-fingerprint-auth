@@ -12,16 +12,22 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
+
+import com.loxone.kerberos.MainActivity;
+import com.loxone.kerberos.R;
 
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
@@ -37,7 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Locale;
+import java.util.concurrent.Executor;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -47,28 +53,35 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
+import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+
 @TargetApi(23)
 public class FingerprintAuth extends CordovaPlugin {
     public static final String TAG = "FingerprintAuth";
     public static String packageName;
 
-    private static final String DIALOG_FRAGMENT_TAG = "FpAuthDialog";
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     public static final String FINGERPRINT_PREF_IV = "aes_iv";
     private static final int PERMISSIONS_REQUEST_FINGERPRINT = 346437;
 
     public static Context mContext;
     public static Activity mActivity;
+    private MainActivity mMainActivity;
     public KeyguardManager mKeyguardManager;
-    public FingerprintAuthenticationDialogFragment mFragment;
     public static KeyStore mKeyStore;
     public static KeyGenerator mKeyGenerator;
     public static Cipher mCipher;
-    private FingerprintManager mFingerPrintManager;
 
     public static CallbackContext mCallbackContext;
     public static PluginResult mPluginResult;
 
+    //Biometric Manager
+    private Executor executor;
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
+    private BiometricManager mBiometricManager;
     public enum PluginAction {
         AVAILABILITY,
         ENCRYPT,
@@ -97,7 +110,6 @@ public class FingerprintAuth extends CordovaPlugin {
         SECURITY_EXCEPTION
     }
 
-    public PluginAction mAction;
 
     /**
      * Alias for our key in the Android Key Store
@@ -114,14 +126,10 @@ public class FingerprintAuth extends CordovaPlugin {
      * Options
      */
     public static boolean mDisableBackup = false;
-    public static int mMaxAttempts = 6;  // one more than the device default to prevent a 2nd callback
-    private String mLangCode = "en_US";
     private static boolean mUserAuthRequired = true;
     public static String mDialogTitle;
     public static String mDialogMessage;
     public static String mDialogHint;
-
-
 
     /**
      * Constructor.
@@ -150,8 +158,7 @@ public class FingerprintAuth extends CordovaPlugin {
         }
 
         mKeyguardManager = cordova.getActivity().getSystemService(KeyguardManager.class);
-        mFingerPrintManager = cordova.getActivity().getApplicationContext()
-                            .getSystemService(FingerprintManager.class);
+        mBiometricManager = BiometricManager.from(cordova.getActivity().getApplicationContext());
 
         try {
             mKeyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE);
@@ -165,7 +172,7 @@ public class FingerprintAuth extends CordovaPlugin {
         }
 
         try {
-            mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
+           mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
                     + KeyProperties.BLOCK_MODE_CBC + "/" + KeyProperties.ENCRYPTION_PADDING_PKCS7);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Failed to get an instance of Cipher", e);
@@ -182,8 +189,7 @@ public class FingerprintAuth extends CordovaPlugin {
      * @param callbackContext The callback id used when calling back into JavaScript.
      * @return A PluginResult object with a status and message.
      */
-    public boolean execute(final String action, JSONArray args, CallbackContext callbackContext)
-            throws JSONException {
+    public boolean execute(final String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         mCallbackContext = callbackContext;
 
         if (android.os.Build.VERSION.SDK_INT < 23) {
@@ -195,24 +201,10 @@ public class FingerprintAuth extends CordovaPlugin {
         }
 
         Log.v(TAG, "FingerprintAuth action: " + action);
-        if (action.equals("availability")) {
-            mAction = PluginAction.AVAILABILITY;
-        } else if (action.equals("encrypt")) {
-            mAction = PluginAction.ENCRYPT;
-            mCipherModeCrypt = true;
-        } else if (action.equals("decrypt")) {
-            mAction = PluginAction.DECRYPT;
-            mCipherModeCrypt = false;
-        } else if (action.equals("delete")) {
-            mAction = PluginAction.DELETE;
-        }
-
-        if (mAction != null) {
+        if(action != null){
             final JSONObject arg_object = args.getJSONObject(0);
-
             JSONObject resultJson = new JSONObject();
-
-            if (mAction != PluginAction.AVAILABILITY) {
+            if (!action.equalsIgnoreCase("availability")) {
                 if (!arg_object.has("clientId")) {
                     Log.e(TAG, "Missing required parameters.");
                     mPluginResult = new PluginResult(PluginResult.Status.ERROR);
@@ -226,140 +218,60 @@ public class FingerprintAuth extends CordovaPlugin {
                 if (arg_object.has("username")) {
                     mUsername = arg_object.getString("username");
                 }
-            }
 
-            switch (mAction) {
-                case AVAILABILITY:
+                if (arg_object.has("disableBackup")) {
+                    mDisableBackup = arg_object.getBoolean("disableBackup");
+                }
+
+                if (arg_object.has("dialogTitle")) {
+                    mDialogTitle = arg_object.getString("dialogTitle");
+                }
+                if (arg_object.has("dialogMessage")) {
+                    mDialogMessage = arg_object.getString("dialogMessage");
+                }
+                if (arg_object.has("dialogHint")) {
+                    mDialogHint = arg_object.getString("dialogHint");
+                }
+            }
+            switch (action){
+                case "availability" :
                     checkAndRequestPermission(Manifest.permission.USE_FINGERPRINT,
                             PERMISSIONS_REQUEST_FINGERPRINT);
                     return true;
-                case ENCRYPT:
-                case DECRYPT:
-                    boolean missingParam = false;
-                    switch (mAction) {
-                        case ENCRYPT:
-                            String password = "";
-                            if (arg_object.has("password")) {
-                                password = arg_object.getString("password");
-                            }
-                            mClientSecret = mClientId + mUsername + ":" + password;
-                            break;
-                        case DECRYPT:
-                            if (arg_object.has("token")) {
-                                mClientSecret = arg_object.getString("token");
-                            } else {
-                                missingParam = true;
-                            }
-                            break;
+                case "encrypt" :
+                    mCipherModeCrypt = true;
+                    String password = "";
+                    if (arg_object.has("password")) {
+                        password = arg_object.getString("password");
                     }
-
-                    if (missingParam) {
+                    mClientSecret = mClientId + mUsername + ":" + password;
+                    showPrompt();
+                    return true;
+                case "decrypt" :
+                    mCipherModeCrypt = false;
+                    if (arg_object.has("token")) {
+                        mClientSecret = arg_object.getString("token");
+                    } else {
                         Log.e(TAG, "Missing required parameters for specified action.");
                         mPluginResult = new PluginResult(PluginResult.Status.ERROR);
                         mCallbackContext.error(PluginError.MISSING_ACTION_PARAMETERS.name());
                         mCallbackContext.sendPluginResult(mPluginResult);
                         return true;
                     }
-
-                    if (arg_object.has("disableBackup")) {
-                        mDisableBackup = arg_object.getBoolean("disableBackup");
-                    }
-                    if (arg_object.has("locale")) {
-                        mLangCode = arg_object.getString("locale");
-                        Log.d(TAG, "Change language to locale: " + mLangCode);
-                    }
-                    if (arg_object.has("maxAttempts")) {
-                        int maxAttempts = arg_object.getInt("maxAttempts");
-                        if (maxAttempts < 5) {
-                            mMaxAttempts = maxAttempts;
-                        }
-                    }
-                    if (arg_object.has("userAuthRequired")) {
-                        mUserAuthRequired = arg_object.getBoolean("userAuthRequired");
-                    }
-                    if (arg_object.has("dialogTitle")) {
-                        mDialogTitle = arg_object.getString("dialogTitle");
-                    }
-                    if (arg_object.has("dialogMessage")) {
-                        mDialogMessage = arg_object.getString("dialogMessage");
-                    }
-                    if (arg_object.has("dialogHint")) {
-                        mDialogHint = arg_object.getString("dialogHint");
-                    }
-
-                    // Set language
-                    Resources res = cordova.getActivity().getResources();
-                    // Change locale settings in the app.
-                    DisplayMetrics dm = res.getDisplayMetrics();
-                    Configuration conf = res.getConfiguration();
-                    // A length of 5 entales a region specific locale string, ex: zh_HK.
-                    // The two argument Locale constructor signature must be used in that case.
-                    if (mLangCode.length() == 5) {
-                        conf.locale = new Locale(mLangCode.substring(0, 2).toLowerCase(),
-                                mLangCode.substring(mLangCode.length() - 2).toUpperCase());
-                    } else {
-                        conf.locale = new Locale(mLangCode.toLowerCase());
-                    }
-                    res.updateConfiguration(conf, dm);
-
-                    if (isFingerprintAuthAvailable()) {
-                        SecretKey key = getSecretKey();
-                        if (key == null) {
-                            if (createKey()) {
-                                key = getSecretKey();
-                            }
-                        }
-                        if (key != null) {
-                            cordova.getActivity().runOnUiThread(new Runnable() {
-                                public void run() {
-                                    // Set up the crypto object for later. The object will be authenticated by use
-                                    // of the fingerprint.
-                                    mFragment = new FingerprintAuthenticationDialogFragment();
-                                    if (initCipher()) {
-                                        mFragment.setCancelable(false);
-                                        // Show the fingerprint dialog. The user has the option to use the fingerprint with
-                                        // crypto, or you can fall back to using a server-side verified password.
-                                        mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                                        mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
-                                    } else {
-                                        if (!mDisableBackup) {
-                                            // This happens if the lock screen has been disabled or or a fingerprint got
-                                            // enrolled. Thus show the dialog to authenticate with their password
-                                            mFragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
-                                            mFragment.setStage(FingerprintAuthenticationDialogFragment.Stage.NEW_FINGERPRINT_ENROLLED);
-                                            mFragment.show(cordova.getActivity().getFragmentManager(), DIALOG_FRAGMENT_TAG);
-                                        } else {
-                                            Log.e(TAG, "Failed to init Cipher and backup disabled.");
-                                            mCallbackContext.error(PluginError.INIT_CIPHER_FAILED.name());
-                                            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                                            mCallbackContext.sendPluginResult(mPluginResult);
-                                        }
-                                    }
-                                }
-                            });
-                            mPluginResult.setKeepCallback(true);
-                        } else {
-                            mCallbackContext.sendPluginResult(mPluginResult);
-                        }
-                    } else {
-                        Log.e(TAG, "Fingerprint authentication not available");
-                        mPluginResult = new PluginResult(PluginResult.Status.ERROR);
-                        mCallbackContext.error(PluginError.FINGERPRINT_NOT_AVAILABLE.name());
-                        mCallbackContext.sendPluginResult(mPluginResult);
-                    }
+                    showPrompt();
                     return true;
-                case DELETE:
+                case "delete" :
                     boolean ivDeleted = false;
                     boolean secretKeyDeleted = false;
                     try {
                         mKeyStore.deleteEntry(mClientId);
                         secretKeyDeleted = true;
-                        ivDeleted = deleteIV();                    
+                        ivDeleted = deleteIV();
                     } catch (KeyStoreException e) {
                         Log.e(TAG, "Error while deleting SecretKey.");
                     }
-                   
-                    if (ivDeleted && secretKeyDeleted) {  
+
+                    if (ivDeleted && secretKeyDeleted) {
                         mPluginResult = new PluginResult(PluginResult.Status.OK);
                         mCallbackContext.success();
                     } else {
@@ -369,22 +281,123 @@ public class FingerprintAuth extends CordovaPlugin {
                     }
                     mCallbackContext.sendPluginResult(mPluginResult);
                     return true;
+                default:
             }
+
+
         }
         return false;
     }
 
+    private void showPrompt(){
+        if (isFingerprintAuthAvailable()) { //true
+            SecretKey key = getSecretKey();
+            if (key == null) {
+                if (createKey()) {
+                    key = getSecretKey();
+                }
+            }
+            if (key != null) {
+
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    executor = ContextCompat.getMainExecutor(cordova.getActivity().getApplicationContext());
+                    mMainActivity = (MainActivity) cordova.getActivity();  //git@github.com:ReallySmallSoftware/cordova-plugin-android-fragmentactivity.git
+
+                    biometricPrompt = new BiometricPrompt(mMainActivity, executor, new BiometricPrompt.AuthenticationCallback() {
+                        @Override
+                        public void onAuthenticationError(int errorCode,
+                                                          @NonNull CharSequence errString) {
+                            super.onAuthenticationError(errorCode, errString);
+                            Log.i(TAG, 	"Authentication error: " + errString + " Code: " + errorCode); //Cancel = 13 //Too much attempts = 7
+                            FingerprintAuth.onError("");
+                        }
+
+                        @Override
+                        public void onAuthenticationSucceeded(
+                                @NonNull BiometricPrompt.AuthenticationResult result) {
+                            super.onAuthenticationSucceeded(result);
+                            Log.i(TAG, 	"Login successful!");
+                            FingerprintAuth.onAuthenticatedNew(result);
+                        }
+
+                        @Override
+                        public void onAuthenticationFailed() {
+                            super.onAuthenticationFailed();
+                            Log.i(TAG, 	"Authentication error!");
+                        }
+                    });
+
+                    Resources res = mActivity.getResources();
+                    //text in strings speichern!!!
+                    if(mDisableBackup){
+                        //authentication for encrypton
+                        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                                .setTitle(mDialogTitle)
+                                .setSubtitle(mDialogMessage)
+                                .setDescription(mDialogHint)
+                                .setNegativeButtonText(res.getString(R.string.cancel))
+                                .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                                .build();
+                        //starts Prompt Dialog
+                        initCipher();
+                        biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(mCipher));
+                    } else {
+                        //only authentication for Appstart
+                        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                                .setTitle(mDialogTitle)
+                                .setSubtitle(mDialogMessage)
+                                .setDescription(mDialogHint)
+                                .setAllowedAuthenticators(BIOMETRIC_WEAK|DEVICE_CREDENTIAL) //strong and credentials not supportet <= A10
+                                .setConfirmationRequired(false)
+                                .build();
+                        biometricPrompt.authenticate(promptInfo);
+                    }
+                }
+            });
+               mPluginResult.setKeepCallback(true);
+            } else {
+                mCallbackContext.sendPluginResult(mPluginResult);
+            }
+        } else {
+            Log.e(TAG, "Fingerprint authentication not available");
+            mPluginResult = new PluginResult(PluginResult.Status.ERROR);
+            mCallbackContext.error(PluginError.FINGERPRINT_NOT_AVAILABLE.name());
+            mCallbackContext.sendPluginResult(mPluginResult);
+        }
+    }
+
+    //prompt to enroll fingerprint setting is missing
     private boolean isFingerprintAuthAvailable() throws SecurityException {
-        return mFingerPrintManager.isHardwareDetected() && mFingerPrintManager.hasEnrolledFingerprints();
+        switch (mBiometricManager.canAuthenticate(BIOMETRIC_STRONG)) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                Log.d(TAG, "App can authenticate using biometrics.");
+                //workarround to prevent using face ID, currently no way to detect typ
+                //FingerprintManager fingerPrintManager = cordova.getActivity().getApplicationContext().getSystemService(FingerprintManager.class);
+                //return fingerPrintManager.hasEnrolledFingerprints();
+                return true;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Log.e(TAG, "No biometric features available on this device.");
+                return false;
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Log.e(TAG, "Biometric features are currently unavailable.");
+                return false;
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Log.e(TAG, "No Biometrics enrolled.");
+                return false;
+        }
+        return false;
     }
 
     private void sendAvailabilityResult() {
         String errorMessage = null;
         JSONObject resultJson = new JSONObject();
+
         try {
             resultJson.put("isAvailable", isFingerprintAuthAvailable());
-            resultJson.put("isHardwareDetected", mFingerPrintManager.isHardwareDetected());
-            resultJson.put("hasEnrolledFingerprints", mFingerPrintManager.hasEnrolledFingerprints());
+            resultJson.put("isHardwareDetected", true);
+            resultJson.put("hasEnrolledFingerprints", true);
             mPluginResult = new PluginResult(PluginResult.Status.OK);
             mCallbackContext.success(resultJson);
             mCallbackContext.sendPluginResult(mPluginResult);
@@ -542,12 +555,23 @@ public class FingerprintAuth extends CordovaPlugin {
             mKeyStore.load(null);
             // Set the alias of the entry in Android KeyStore where the key will appear
             // and the constrains (purposes) in the constructor of the Builder
-            mKeyGenerator.init(new KeyGenParameterSpec.Builder(mClientId,
-                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                    .setUserAuthenticationRequired(mUserAuthRequired)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                    .build());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mKeyGenerator.init(new KeyGenParameterSpec.Builder(mClientId,
+                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                        .setUserAuthenticationRequired(mUserAuthRequired)
+                        //.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG | KeyProperties.AUTH_DEVICE_CREDENTIAL)
+                        .setInvalidatedByBiometricEnrollment(false)     //key should not be invalidated on biometric enrollment, only Android 7
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                        .build());
+            }else{
+                mKeyGenerator.init(new KeyGenParameterSpec.Builder(mClientId,
+                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                        .setUserAuthenticationRequired(mUserAuthRequired)
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                        .build());
+            }
             mKeyGenerator.generateKey();
             isKeyCreated = true;
         } catch (NoSuchAlgorithmException e) {
@@ -574,32 +598,33 @@ public class FingerprintAuth extends CordovaPlugin {
         return isKeyCreated;
     }
 
-    public static void onAuthenticated(boolean withFingerprint,
-                                       FingerprintManager.AuthenticationResult result) {
+
+    public static void onAuthenticatedNew(@NonNull BiometricPrompt.AuthenticationResult result) {
         JSONObject resultJson = new JSONObject();
         String errorMessage = "";
         boolean createdResultJson = false;
 
         try {
-            if (withFingerprint) {
+            if (mDisableBackup) { //result.getAuthenticationType() == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC
                 // If the user has authenticated with fingerprint, verify that using cryptography and
                 // then return the encrypted (in Base 64) or decrypted mClientSecret
                 byte[] bytes;
-                if (mCipherModeCrypt) {
+                if (mCipherModeCrypt) { //encrypt
                     bytes = result.getCryptoObject().getCipher()
                             .doFinal(mClientSecret.getBytes("UTF-8"));
                     String encodedBytes = Base64.encodeToString(bytes, Base64.NO_WRAP);
                     resultJson.put("token", encodedBytes);
-                } else {
-                    bytes = result.getCryptoObject().getCipher()
-                            .doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
+                } else {    //decrypt
+
+                    //bytes = result.getCryptoObject().getCipher().doFinal("asdf".getBytes(Charset.defaultCharset()));
+                    bytes = result.getCryptoObject().getCipher().doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
                     String credentialString = new String(bytes, "UTF-8");
                     String[] credentialArray = credentialString.split(":");
                     if (credentialArray.length == 2) {
                         String username = credentialArray[0];
                         String password = credentialArray[1];
                         if (username.equalsIgnoreCase(mClientId + mUsername)) {
-                            resultJson.put("password", credentialArray[1]);
+                            resultJson.put("password", password);
                         }
                     }
                 }
@@ -607,7 +632,6 @@ public class FingerprintAuth extends CordovaPlugin {
             } else {
                 // Authentication happened with backup password.
                 resultJson.put("withBackup", true);
-
                 // If failed to init cipher because of InvalidKeyException, create new key
                 if (!initCipher()) {
                     createKey();
