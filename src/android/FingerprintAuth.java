@@ -615,7 +615,6 @@ public class FingerprintAuth extends CordovaPlugin {
                     String encodedBytes = Base64.encodeToString(bytes, Base64.NO_WRAP);
                     resultJson.put("token", encodedBytes);
                 } else {    //decrypt
-
                     //bytes = result.getCryptoObject().getCipher().doFinal("asdf".getBytes(Charset.defaultCharset()));
                     bytes = result.getCryptoObject().getCipher().doFinal(Base64.decode(mClientSecret, Base64.NO_WRAP));
                     String credentialString = new String(bytes, "UTF-8");
