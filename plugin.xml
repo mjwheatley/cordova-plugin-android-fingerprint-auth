@@ -33,4 +33,7 @@
 
     <dependency id="cordova-plugin-android-fragmentactivity" version="^2.2.1" />
 
+    <framework src="build-extras.gradle" custom="true" type="gradleReference" />
+
+
 </plugin>
