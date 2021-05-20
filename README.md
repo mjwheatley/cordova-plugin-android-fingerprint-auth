@@ -1,3 +1,6 @@
+# Update to Version 2.0.0
+add Biometric-Manger / massive changes
+
 # Update to Version 1.2.0
 Please consult the [changelog](https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth/blob/master/changelog.md).
 
@@ -10,12 +13,6 @@ This plugin was created referencing the [Fingerprint Dialog sample](http://devel
 This plugin will open a native dialog fragment prompting the user to authenticate using their fingerprint.  If the device has a secure lockscreen (pattern, PIN, or password), the user may opt to authenticate using that method as a backup.
 
 This plugin will only work on devices whose manufacturers have implemented the Android 6.0 Fingerprint Authentication API.  This plugin does not support the Samsung Pass SDK and not all Samsung devices implement the Android 6.0 Fingerprint Authentication API.  If you are testing this plugin on a Samsung device and it is not working, please check the device compatibility before reporting an issue.
-
-# Screenshots
-### Fingerprint Authentication Dialog
-![Fingerprint Auth Dialog](screenshots/fp_auth_dialog.jpg) ![Fingerprint Auth Dialog Success](screenshots/fp_auth_dialog_success.png) ![Fingerprint Auth Dialog Fail](screenshots/fp_auth_dialog_fail.jpg) ![Fingerprint Auth Dialog Too Many](screenshots/fp_auth_dialog_too_many.jpg) ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_no_backup.jpg) ![Fingerprint Auth Dialog No Backup](screenshots/fp_auth_dialog_longer.png)
-### Backup Credentials
-![Confirm Password](screenshots/confirm_creds_pw.png) ![Confirm PIN](screenshots/confirm_creds_pin.png) ![Confirm Pattern](screenshots/confirm_creds_pattern.png)
 
 # Installation
 ### Cordova
