@@ -326,7 +326,8 @@ public class FingerprintAuth extends CordovaPlugin {
                         public void onAuthenticationFailed() {
                             super.onAuthenticationFailed();
                             Log.i(TAG, 	"Authentication error!");
-                            FingerprintAuth.onError("");
+                            //called if invalied fingerprint, asks again for Authentication automatically
+                            //no Error handling needed
                         }
                     });
 

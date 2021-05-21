@@ -12,4 +12,4 @@ dependencies {
     compile 'com.android.support:support-v4:24.0.0'
 }
 
-ext.cdvCompileSdkVersion = 30
+ext.cdvCompileSdkVersion = 30 //Biometric Manager framework needs cdvCompileSdkVersion > 29
