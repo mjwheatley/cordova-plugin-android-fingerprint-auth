@@ -31,7 +31,7 @@
         <framework src="androidx.biometric:biometric:1.1.0"/>
     </platform>
 
-    <dependency id="cordova-plugin-android-fragmentactivity" version="^2.2.1" />
+    <dependency id="cordova-plugin-android-fragmentactivity" url="https://github.com/Loxone/cordova-plugin-android-fragmentactivity.git" />
 
     <framework src="build-extras.gradle" custom="true" type="gradleReference" />
 
