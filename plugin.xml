@@ -29,6 +29,7 @@
         <source-file src="build-extras.gradle" target-dir="." />
         <source-file src="src/android/FingerprintAuth.java" target-dir="src/com/cordova/plugin/android/fingerprintauth" />
         <framework src="androidx.biometric:biometric:1.1.0"/>
+        <hook type="after_prepare" src="apply.js" />
     </platform>
 
     <dependency id="cordova-plugin-android-fragmentactivity" url="https://github.com/Loxone/cordova-plugin-android-fragmentactivity.git" />

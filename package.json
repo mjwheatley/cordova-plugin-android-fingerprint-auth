@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth/issues"
   },
-  "homepage": "https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth#readme"
+  "homepage": "https://github.com/mjwheatley/cordova-plugin-android-fingerprint-auth#readme",
+  "devDependencies": {
+    "q": "^1.5.1"
+  }
 }
