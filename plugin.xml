@@ -42,6 +42,7 @@
         <resource-file src="res/android/values/fpauth-strings.xml" target="res/values/fpauth-strings.xml" />
         <resource-file src="res/android/values-it" target="res/values-it" />
         <resource-file src="res/android/values-es" target="res/values-es" />
+        <resource-file src="res/android/values-ca-es" target="res/values-ca-es" />
         <resource-file src="res/android/values-ru" target="res/values-ru" />
         <resource-file src="res/android/values-fr" target="res/values-fr" />
         <resource-file src="res/android/values-zh" target="res/values-zh" />
