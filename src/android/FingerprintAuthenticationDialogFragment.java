@@ -274,6 +274,12 @@ public class FingerprintAuthenticationDialogFragment extends DialogFragment
     }
 
     @Override
+    public void onCancelledByUser() {
+        com.cordova.plugin.android.fingerprintauth.FingerprintAuth.onCancelled();
+        dismissAllowingStateLoss();
+    }
+
+    @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         FingerprintAuth.onCancelled();
